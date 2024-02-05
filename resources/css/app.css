@@ -1,0 +1,64 @@
+@import url("./_components.css");
+
+@import url("https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    background-color: #1a191f;
+    font-family: "Source Sans 3", sans-serif;
+    color: white !important;
+    /* -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none; */
+
+    /* for modal open */
+    margin-right: calc(-1 * (100vw - 100%));
+    overflow-x: hidden;
+
+    /* this is scrollbar width */
+    padding-right: 3px;
+}
+
+.app-button {
+    background: #04a3d8 !important;
+    color: #fff !important;
+    border-color: #04a3d8 !important;
+}
+
+.app-button:hover,
+.app-button:focus {
+    background: rgba(#04a3d8, 0.7) !important;
+    color: #fff !important;
+    border-color: rgba(#04a3d8, 0.7) !important;
+}
+
+.el-breadcrumb__inner,
+.el-breadcrumb__inner a {
+    color: #fff !important;
+}
+
+.el-breadcrumb__item:last-child .el-breadcrumb__inner {
+    color: #8491a1 !important;
+}
+
+.el-dialog__title {
+    color: #fff !important;
+}
+
+.el-textarea__inner,
+.el-input__inner {
+    border-radius: 2px;
+    border: 1px solid transparent;
+    transition: all 0.5s;
+    box-sizing: border-box;
+}
+
+[type="text"]:focus {
+    outline-offset: 0 !important;
+    outline: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
