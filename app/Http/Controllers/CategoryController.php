@@ -10,10 +10,20 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::get();
+        $categories = Category::when(request('search'), function ($q, $search) {
+            return $q->where('name', 'like', "%$search%");
+        })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn ($category) => [
+                'id' => $category->id,
+                'name' => $category->name,
+            ]);
 
         return Inertia::render('Movie-Settings/Category/Index', [
-            "categories" => $categories
+            "categories" => $categories,
+            "filters" => request('search')
         ]);
     }
 

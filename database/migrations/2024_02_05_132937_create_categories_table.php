@@ -11,10 +11,27 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::create('statuses', function (Blueprint $table) {
+            $table->id();
+            $table->string('slug')->unique();
+            $table->string('name');
+            $table->string('type')->default('status');
+            $table->timestamps();
+        });
+
+        Schema::create('countries', function (Blueprint $table) {
+            $table->id();
+            $table->string('slug')->unique();
+            $table->string('name');
+            $table->integer('priority')->default(999);
+            $table->timestamps();
+        });
+
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->string('slug');
             $table->string('name');
+            $table->integer('priority')->default(999);
             $table->timestamps();
         });
 
@@ -22,6 +39,7 @@ return new class extends Migration
             $table->id();
             $table->string('slug');
             $table->string('name');
+            $table->integer('priority')->default(999);
             $table->timestamps();
         });
     }

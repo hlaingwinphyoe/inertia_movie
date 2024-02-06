@@ -27,7 +27,7 @@
             <div class="dialog-footer">
                 <el-button @click="closeDialog(formRef)">Cancel</el-button>
                 <el-button class="app-button" @click="submitDialog(formRef)">
-                    Confirm
+                    Save
                 </el-button>
             </div>
         </template>

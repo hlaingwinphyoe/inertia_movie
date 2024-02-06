@@ -3,26 +3,26 @@
         <div class="text-white pl-0 p-2">
             <div class="flex justify-between items-center">
                 <h4 class="text-xl font-bold">
-                    Categories
+                    Movies
                     <small class="ml-2 text-gray-500 font-thin text-[13px]"
                         >{{ total }} Total</small
                     >
                 </h4>
                 <!-- Bradcrumb -->
                 <Breadcrumb>
-                    <el-breadcrumb-item
-                        ><a href="/">Movie Lists</a></el-breadcrumb-item
-                    >
-                    <el-breadcrumb-item>Categories</el-breadcrumb-item>
+                    <el-breadcrumb-item>Movies</el-breadcrumb-item>
                 </Breadcrumb>
             </div>
 
             <!-- Form -->
             <div class="flex items-center justify-between my-4">
-                <el-button @click="addNew" class="app-button">
-                    <font-awesome-icon icon="fa-solid fa-plus" />
-                    Add New
-                </el-button>
+                <Link :href="route('admin.movies.create')">
+                    <el-button class="app-button">
+                        <font-awesome-icon icon="fa-solid fa-plus" />
+                        Add New
+                    </el-button>
+                </Link>
+
                 <div>
                     <el-input placeholder="Search..." size="large" />
                 </div>
@@ -39,7 +39,11 @@
                     >
                         <tr>
                             <th scope="col" class="px-6 py-3.5">#</th>
-                            <th scope="col" class="px-6 py-3.5">Name</th>
+                            <th scope="col" class="px-6 py-3.5">Title</th>
+                            <th scope="col" class="px-6 py-3.5">Category</th>
+                            <th scope="col" class="px-6 py-3.5">Type</th>
+                            <th scope="col" class="px-6 py-3.5">Views</th>
+                            <th scope="col" class="px-6 py-3.5">Status</th>
                             <th scope="col" class="px-6 py-3.5">Created</th>
                             <th scope="col" class="px-6 py-3.5">Actions</th>
                         </tr>
@@ -47,11 +51,11 @@
                     <tbody>
                         <tr
                             class="border-b border-secondary-700"
-                            v-for="row in categories.data"
+                            v-for="row in movies.data"
                             :key="row.id"
                         >
                             <td class="px-6 py-3.5">{{ row.id }}</td>
-                            <td class="px-6 py-3.5">{{ row.name }}</td>
+                            <td class="px-6 py-3.5">{{ row.title }}</td>
                             <td class="px-6 py-3.5">
                                 {{ dateFormat(row.created_at) }}
                             </td>
@@ -93,16 +97,9 @@
                     </tbody>
                 </table>
 
-                <Pagination :links="categories.links" />
+                <Pagination :links="movies.links" />
             </div>
         </div>
-
-        <Dialog
-            :show="showDialog"
-            @closed="closeDialog"
-            :title="dialog.dialogTitle"
-            :data="dialog.dialogData"
-        />
     </AuthenticatedLayout>
 </template>
 
@@ -110,42 +107,25 @@
 import Breadcrumb from "@/Components/Breadcrumb.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { reactive, toRefs } from "vue";
-import Dialog from "./Dialog.vue";
 import { dateFormat } from "@/utils/date-format.js";
-import { router } from "@inertiajs/vue3";
+import { Link, router } from "@inertiajs/vue3";
 import { ElMessage, ElMessageBox } from "element-plus";
 import Pagination from "@/Shared/Pagination.vue";
 export default {
-    props: ["categories", "filters"],
+    props: ["movies", "filters"],
     components: {
         Breadcrumb,
         AuthenticatedLayout,
-        Dialog,
         Pagination,
+        Link,
     },
     setup(props) {
         const state = reactive({
             showDialog: false,
             isLoading: false,
-            dialog: {
-                dialogTitle: "",
-                dialogData: {},
-            },
-            total: props.categories.total,
+            total: props.movies.total,
             search: props.filters ?? "",
         });
-
-        const addNew = () => {
-            state.dialog.dialogTitle = "Create";
-            state.dialog.dialogData = {};
-            state.showDialog = true;
-        };
-
-        const handleEdit = (row) => {
-            state.dialog.dialogTitle = "Edit";
-            state.dialog.dialogData = JSON.parse(JSON.stringify(row));
-            state.showDialog = true;
-        };
 
         const deleteHandler = (id) => {
             ElMessageBox.confirm("Are you sure you want to delete", "Warning", {
@@ -156,7 +136,7 @@ export default {
                 closeOnClickModal: false,
             })
                 .then(() => {
-                    router.delete(route("admin.categories.destroy", id), {
+                    router.delete(route("admin.movies.destroy", id), {
                         onSuccess: (page) => {
                             ElMessage.success(page.props.flash.success);
                         },
@@ -176,9 +156,7 @@ export default {
 
         return {
             ...toRefs(state),
-            addNew,
             closeDialog,
-            handleEdit,
             deleteHandler,
             dateFormat,
         };

@@ -10,10 +10,20 @@ class TypeController extends Controller
 {
     public function index()
     {
-        $types = Type::latest()->get();
+        $types = Type::when(request('search'), function ($q, $search) {
+            return $q->where('name', 'like', "%$search%");
+        })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn ($type) => [
+                'id' => $type->id,
+                'name' => $type->name,
+            ]);
 
         return Inertia::render("Movie-Settings/Type/Index", [
-            'types' => $types
+            'types' => $types,
+            'filters' => request('search')
         ]);
     }
 

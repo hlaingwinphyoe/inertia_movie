@@ -27,7 +27,7 @@
             <div class="dialog-footer">
                 <el-button @click="closeDialog(formRef)">Cancel</el-button>
                 <el-button class="app-button" @click="submitDialog(formRef)">
-                    Confirm
+                    Save
                 </el-button>
             </div>
         </template>
@@ -55,21 +55,17 @@ export default {
                 if (valid) {
                     if (state.dialogTitle === "Create") {
                         state.doubleClick = true;
-                        router.post(
-                            route("admin.types.store"),
-                            state.form,
-                            {
-                                onSuccess: (page) => {
-                                    state.doubleClick = false;
-                                    closeDialog(formRef);
-                                    ElMessage.success(page.props.flash.success);
-                                    formRef.resetFields();
-                                },
-                                onError: () => {
-                                    state.doubleClick = false;
-                                },
-                            }
-                        );
+                        router.post(route("admin.types.store"), state.form, {
+                            onSuccess: (page) => {
+                                state.doubleClick = false;
+                                closeDialog(formRef);
+                                ElMessage.success(page.props.flash.success);
+                                formRef.resetFields();
+                            },
+                            onError: () => {
+                                state.doubleClick = false;
+                            },
+                        });
                     } else {
                         state.doubleClick = true;
                         router.patch(

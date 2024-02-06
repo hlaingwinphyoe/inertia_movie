@@ -2,7 +2,12 @@
     <AuthenticatedLayout>
         <div class="text-white pl-0 p-2">
             <div class="flex justify-between items-center">
-                <h4 class="text-lg font-bold mb-4">Types</h4>
+                <h4 class="text-xl font-bold">
+                    Types
+                    <small class="ml-2 text-gray-500 font-thin text-[13px]"
+                        >{{ total }} Total</small
+                    >
+                </h4>
                 <!-- Bradcrumb -->
                 <Breadcrumb>
                     <el-breadcrumb-item
@@ -12,51 +17,45 @@
                 </Breadcrumb>
             </div>
 
+            <!-- Form -->
+            <div class="flex items-center justify-between my-4">
+                <el-button @click="addNew" class="app-button">
+                    <font-awesome-icon icon="fa-solid fa-plus" />
+                    Add New
+                </el-button>
+                <div>
+                    <el-input placeholder="Search..." size="large" />
+                </div>
+            </div>
+
             <!-- Main -->
-            <div class="overflow-hidden shadow-sm">
-                <div
-                    v-loading="isLoading"
-                    element-loading-custom-class="border-radius"
-                    element-loading-background="rgba(122, 122, 122, 0.3)"
+
+            <div class="relative overflow-x-auto">
+                <table
+                    class="w-full border-y border-gray-800 text-sm text-left text-gray-400"
                 >
-                    <div class="table">
-                        <el-button
-                            @click="addNew"
-                            class="app-button"
-                            style="margin-bottom: 25px"
-                        >
-                            <font-awesome-icon
-                                icon="fa-solid fa-plus"
-                                style="margin-right: 5px"
-                            />
-                            Add New
-                        </el-button>
-                    </div>
-
-                    <el-table
-                        :data="types"
-                        :row-style="{ height: '40px' }"
-                        :header-row-style="{ height: '55px' }"
-                        :border="true"
-                        v-can="`access-player`"
+                    <thead
+                        class="text-xs uppercase text-gray-200 bg-secondary-600"
                     >
-                        <el-table-column
-                            prop="name"
-                            label="Name"
-                            align="center"
-                        />
-
-                        <el-table-column
-                            label="Created"
-                            align="center"
-                            min-width="110"
+                        <tr>
+                            <th scope="col" class="px-6 py-3.5">#</th>
+                            <th scope="col" class="px-6 py-3.5">Name</th>
+                            <th scope="col" class="px-6 py-3.5">Created</th>
+                            <th scope="col" class="px-6 py-3.5">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr
+                            class="border-b border-secondary-700"
+                            v-for="row in types.data"
+                            :key="row.id"
                         >
-                            <template #default="scope">
-                                {{ dateFormat(scope.row.created_at) }}
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="Actions" align="center">
-                            <template #default="scope">
+                            <td class="px-6 py-3.5">{{ row.id }}</td>
+                            <td class="px-6 py-3.5">{{ row.name }}</td>
+                            <td class="px-6 py-3.5">
+                                {{ dateFormat(row.created_at) }}
+                            </td>
+                            <td class="px-6 py-3.5">
                                 <el-tooltip
                                     class="box-item"
                                     content="Edit"
@@ -66,7 +65,7 @@
                                         type="warning"
                                         style="margin-bottom: 5px"
                                         circle
-                                        @click="handleEdit(scope.row)"
+                                        @click="handleEdit(row)"
                                     >
                                         <font-awesome-icon
                                             icon="fa-regular fa-pen-to-square"
@@ -82,17 +81,19 @@
                                         type="danger"
                                         circle
                                         style="margin-bottom: 5px"
-                                        @click="deleteHandler(scope.row.id)"
+                                        @click="deleteHandler(row.id)"
                                     >
                                         <font-awesome-icon
-                                            :icon="['far', 'trash-can']"
+                                            :icon="['fas', 'trash-can']"
                                         />
                                     </el-button>
                                 </el-tooltip>
-                            </template>
-                        </el-table-column>
-                    </el-table>
-                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <Pagination :links="types.links" />
             </div>
         </div>
 
@@ -113,12 +114,14 @@ import Dialog from "./Dialog.vue";
 import { dateFormat } from "@/utils/date-format.js";
 import { router } from "@inertiajs/vue3";
 import { ElMessage, ElMessageBox } from "element-plus";
+import Pagination from "@/Shared/Pagination.vue";
 export default {
-    props: ["types"],
+    props: ["types", "filters"],
     components: {
         Breadcrumb,
         AuthenticatedLayout,
         Dialog,
+        Pagination,
     },
     setup(props) {
         const state = reactive({
@@ -128,13 +131,8 @@ export default {
                 dialogTitle: "",
                 dialogData: {},
             },
-            pageList: [10, 20, 60, 80, 100],
-            param: {
-                page: 1,
-                page_size: 10,
-            },
-            tableData: props.types,
-            total: 0,
+            total: props.types.total,
+            search: props.filters ?? "",
         });
 
         const addNew = () => {

@@ -22,6 +22,16 @@ export default {
             "primary-700": "#025F9B",
             "primary-800": "#01437D",
             "primary-900": "#003067",
+
+            "secondary-100": "#ECF1F5",
+            "secondary-200": "#DAE3EC",
+            "secondary-300": "#B1BBC7",
+            "secondary-400": "#7B8490",
+            "secondary-500": "#393E46",
+            "secondary-600": "#29303C",
+            "secondary-700": "#1C2332",
+            "secondary-800": "#121828",
+            "secondary-900": "#0A1021",
         },
         screens: {
             sm: "640px",
