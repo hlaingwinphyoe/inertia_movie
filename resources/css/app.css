@@ -35,6 +35,11 @@ body {
     border-color: rgba(#04a3d8, 0.7) !important;
 }
 
+.el-radio-button__original-radio:checked+.el-radio-button__inner{
+    background-color: #04a3d8 !important;
+    border-color: #04a3d8 !important;
+}
+
 .el-breadcrumb__inner,
 .el-breadcrumb__inner a {
     color: #fff !important;

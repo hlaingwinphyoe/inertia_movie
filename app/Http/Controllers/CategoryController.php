@@ -19,6 +19,7 @@ class CategoryController extends Controller
             ->through(fn ($category) => [
                 'id' => $category->id,
                 'name' => $category->name,
+                'created_at' => $category->created_at->diffForHumans(),
             ]);
 
         return Inertia::render('Movie-Settings/Category/Index', [

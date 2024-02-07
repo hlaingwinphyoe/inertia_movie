@@ -20,15 +20,17 @@ return new class extends Migration
             $table->text('casts');
             $table->string('director');
             $table->string('release_year');
-            $table->text('video');
-            $table->text('thumbnail');
-            $table->foreignId('status_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('type_id')->constrained()->cascadeOnDelete();
+            $table->text('video')->nullable();
+            $table->text('thumbnail')->nullable();
             $table->integer('size')->nullable();
+            $table->double('rating', 2, 1)->default(0);
             $table->bigInteger('movie_views')->unsigned()->default(0)->index();
             $table->string('video_quality');
             $table->string('running_time')->nullable();
+            $table->boolean('is_published')->default(false);
+            $table->foreignId('type_id')->constrained()->cascadeOnDelete();
             $table->foreignId('country_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
 

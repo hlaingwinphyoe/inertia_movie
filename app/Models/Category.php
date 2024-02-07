@@ -19,4 +19,9 @@ class Category extends Model
             ->generateSlugsFrom('name')
             ->saveSlugsTo('slug');
     }
+
+    public function movies()
+    {
+        return $this->belongsToMany(Movie::class, 'movie_cates', 'category_id', 'movie_id');
+    }
 }

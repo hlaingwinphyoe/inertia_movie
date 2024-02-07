@@ -39,11 +39,13 @@
                     >
                         <tr>
                             <th scope="col" class="px-6 py-3.5">#</th>
+                            <th scope="col" class="px-6 py-3.5">Cover</th>
                             <th scope="col" class="px-6 py-3.5">Title</th>
+                            <th scope="col" class="px-6 py-3.5">Rating</th>
                             <th scope="col" class="px-6 py-3.5">Category</th>
                             <th scope="col" class="px-6 py-3.5">Type</th>
                             <th scope="col" class="px-6 py-3.5">Views</th>
-                            <th scope="col" class="px-6 py-3.5">Status</th>
+                            <th scope="col" class="px-6 py-3.5">Published</th>
                             <th scope="col" class="px-6 py-3.5">Created</th>
                             <th scope="col" class="px-6 py-3.5">Actions</th>
                         </tr>
@@ -55,11 +57,40 @@
                             :key="row.id"
                         >
                             <td class="px-6 py-3.5">{{ row.id }}</td>
+                            <td class="px-6 py-3.5">
+                                <img
+                                    v-if="row.thumbnail"
+                                    :src="row.thumbnail"
+                                    class="w-auto h-10"
+                                    alt=""
+                                />
+                            </td>
                             <td class="px-6 py-3.5">{{ row.title }}</td>
                             <td class="px-6 py-3.5">
-                                {{ dateFormat(row.created_at) }}
+                                <font-awesome-icon
+                                    :icon="['fas', 'star']"
+                                    size="xs"
+                                    class="text-yellow-400"
+                                />
+                                {{ row.rating }}
+                            </td>
+                            <td class="px-6 py-3.5">{{ row.categories }}</td>
+                            <td class="px-6 py-3.5">{{ row.type }}</td>
+                            <td class="px-6 py-3.5">{{ row.views }}</td>
+                            <td class="px-6 py-3.5">
+                                <el-switch
+                                    v-model="row.is_published"
+                                    :active-value="1"
+                                    :inactive-value="0"
+                                    active-color="#13ce66"
+                                    inactive-color="#ff4949"
+                                    @change="changeStatus(row)"
+                                />
                             </td>
                             <td class="px-6 py-3.5">
+                                {{ row.created_at }}
+                            </td>
+                            <td class="px-6 py-3.5 whitespace-nowrap">
                                 <el-tooltip
                                     class="box-item"
                                     content="Edit"
@@ -69,11 +100,19 @@
                                         type="warning"
                                         style="margin-bottom: 5px"
                                         circle
-                                        @click="handleEdit(row)"
                                     >
-                                        <font-awesome-icon
-                                            icon="fa-regular fa-pen-to-square"
-                                        />
+                                        <Link
+                                            :href="
+                                                route(
+                                                    'admin.movies.edit',
+                                                    row.id
+                                                )
+                                            "
+                                        >
+                                            <font-awesome-icon
+                                                icon="fa-regular fa-pen-to-square"
+                                            />
+                                        </Link>
                                     </el-button>
                                 </el-tooltip>
                                 <el-tooltip
@@ -107,7 +146,6 @@
 import Breadcrumb from "@/Components/Breadcrumb.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { reactive, toRefs } from "vue";
-import { dateFormat } from "@/utils/date-format.js";
 import { Link, router } from "@inertiajs/vue3";
 import { ElMessage, ElMessageBox } from "element-plus";
 import Pagination from "@/Shared/Pagination.vue";
@@ -127,18 +165,61 @@ export default {
             search: props.filters ?? "",
         });
 
+        const changeStatus = (row) => {
+            ElMessageBox.confirm(
+                "Are you sure want to change status of this movie?",
+                "Confirmation",
+                {
+                    confirmButtonText: "Confirm",
+                    cancelButtonText: "Cancel",
+                    type: "warning",
+                    draggable: true,
+                    closeOnClickModal: false,
+                }
+            )
+                .then(() => {
+                    router.patch(
+                        route("admin.movies.change-status", row.id),
+                        {},
+                        {
+                            preserveState: true,
+                            onSuccess: (page) => {
+                                ElMessage.success(page.props.flash.success);
+                            },
+                            onError: (page) => {
+                                ElMessage.error(page.props.flash.error);
+                            },
+                        }
+                    );
+                })
+                .catch(() => {
+                    router.reload();
+                    ElMessage({
+                        type: "info",
+                        message: "Cancel",
+                    });
+                });
+        };
+
         const deleteHandler = (id) => {
-            ElMessageBox.confirm("Are you sure you want to delete", "Warning", {
-                confirmButtonText: "Confirm",
-                cancelButtonText: "Cancel",
-                type: "warning",
-                draggable: true,
-                closeOnClickModal: false,
-            })
+            ElMessageBox.confirm(
+                "Are you sure you want to delete?",
+                "Warning",
+                {
+                    confirmButtonText: "Confirm",
+                    cancelButtonText: "Cancel",
+                    type: "warning",
+                    draggable: true,
+                    closeOnClickModal: false,
+                }
+            )
                 .then(() => {
                     router.delete(route("admin.movies.destroy", id), {
                         onSuccess: (page) => {
                             ElMessage.success(page.props.flash.success);
+                        },
+                        onError: (page) => {
+                            ElMessage.error(page.props.flash.error);
                         },
                     });
                 })
@@ -158,7 +239,7 @@ export default {
             ...toRefs(state),
             closeDialog,
             deleteHandler,
-            dateFormat,
+            changeStatus,
         };
     },
 };

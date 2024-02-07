@@ -19,6 +19,7 @@ class TypeController extends Controller
             ->through(fn ($type) => [
                 'id' => $type->id,
                 'name' => $type->name,
+                'created_at' => $type->created_at->diffForHumans(),
             ]);
 
         return Inertia::render("Movie-Settings/Type/Index", [

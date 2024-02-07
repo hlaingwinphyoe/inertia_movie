@@ -22,7 +22,7 @@
                 :model="form"
                 label-position="top"
             >
-                <div class="grid grid-cols-4 items-center gap-4">
+                <div class="grid grid-cols-1 lg:grid-cols-4 items-center gap-4">
                     <div class="col-span-1">
                         <el-form-item
                             label="Cover Photo"
@@ -36,9 +36,27 @@
                             ]"
                         >
                             <div
-                                class="p-3 border border-[#4C4D4F] h-80 w-full rounded flex items-center justify-center"
+                                class="border border-secondary-500 h-80 w-full rounded flex items-center justify-center cursor-pointer overflow-hidden"
+                                @click="selectImage"
                             >
-                                <h4>Upload Cover (270 x 400)</h4>
+                                <img
+                                    v-show="imgSrc"
+                                    id="preview_img"
+                                    class="w-full h-auto object-cover"
+                                    :src="imgSrc"
+                                />
+                                <h4 v-show="!imgSrc">
+                                    Upload Cover (270 x 400)
+                                </h4>
+
+                                <input
+                                    type="file"
+                                    class="hidden"
+                                    name="image"
+                                    id="upload"
+                                    @change="loadFile"
+                                    accept="image/*"
+                                />
                             </div>
                         </el-form-item>
                     </div>
@@ -160,7 +178,7 @@
                                 v-for="item in countries"
                                 :key="item.slug"
                                 :label="item.name"
-                                :value="item.slug"
+                                :value="item.id"
                             />
                         </el-select>
                     </el-form-item>
@@ -189,11 +207,10 @@
                         </el-select>
                     </el-form-item>
                 </div>
-                <div class="grid grid-cols-3 gap-4 mb-5">
+                <div class="grid grid-cols-4 gap-4">
                     <el-form-item
                         class="col-span-1"
                         label="Movie Type"
-                        size="large"
                         :rules="[
                             {
                                 required: true,
@@ -206,8 +223,9 @@
                             <el-radio-button
                                 v-for="item in types"
                                 :key="item.id"
-                                :label="item.name"
-                            />
+                                :label="item.id"
+                                >{{ item.name }}
+                            </el-radio-button>
                         </el-radio-group>
                     </el-form-item>
                     <el-form-item
@@ -235,14 +253,60 @@
                                 v-for="item in categories"
                                 :key="item.slug"
                                 :label="item.name"
-                                :value="item.slug"
+                                :value="item.id"
                             />
                         </el-select>
                     </el-form-item>
+                    <el-form-item
+                        label="Rating"
+                        size="large"
+                        :rules="[
+                            {
+                                required: true,
+                                message: 'Rating is required',
+                                trigger: 'blur',
+                            },
+                        ]"
+                    >
+                        <el-input-number
+                            v-model="form.rating"
+                            :min="1"
+                            :max="10"
+                            controls-position="right"
+                            step="0.5"
+                        />
+                    </el-form-item>
+                </div>
+                <div class="flex gap-4">
+                    <el-form-item label="Photos" size="large"> </el-form-item>
+                    <el-form-item label="Trailer Video" size="large">
+                        <input
+                            ref="videoRef"
+                            @change="uploadVideo"
+                            class="block w-full text-xs border rounded cursor-pointer text-gray-400 focus:outline-none bg-transparent border-secondary-500 placeholder-secondary-800"
+                            accept="video/*"
+                            type="file"
+                        />
+
+                        <div class="mt-4" v-if="videoSrc">
+                            <video
+                                width="340"
+                                height="240"
+                                controls
+                                :src="videoSrc"
+                                type="video/mp4"
+                            ></video>
+                        </div>
+                    </el-form-item>
                 </div>
                 <div class="pt-5 border-t border-[#4C4D4F]">
-                    <el-button>Save as draft</el-button>
-                    <el-button class="app-button">Publish</el-button>
+                    <el-button class="app-button" @click="submitForm(formRef)">
+                        <font-awesome-icon :icon="['fas', 'floppy-disk']" />
+                        <span v-if="title == 'Create'" class="ml-1.5"
+                            >Publish</span
+                        >
+                        <span v-else class="ml-1.5">Update</span>
+                    </el-button>
                 </div>
             </el-form>
         </div>
@@ -251,24 +315,149 @@
 
 <script>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Link } from "@inertiajs/vue3";
+import { Link, router } from "@inertiajs/vue3";
 import Breadcrumb from "@/Components/Breadcrumb.vue";
 import { reactive, ref, toRefs } from "vue";
+import { ElMessage } from "element-plus";
 export default {
-    props: ["title", "categories", "types", "countries"],
+    props: ["title", "categories", "types", "countries", "movie"],
     components: { AuthenticatedLayout, Link, Breadcrumb },
-    setup() {
+    setup(props) {
         const state = reactive({
-            form: {},
+            form: {
+                title: props.movie ? props.movie.title : "",
+                casts: props.movie ? props.movie.casts : "",
+                description: props.movie ? props.movie.description : "",
+                director: props.movie ? props.movie.director : "",
+                release_year: props.movie ? props.movie.release_year : "",
+                running_time: props.movie ? props.movie.running_time : "",
+                country_id: props.movie ? props.movie.country_id : "",
+                type_id: props.movie ? props.movie.type_id : "",
+                video_quality: props.movie ? props.movie.video_quality : "",
+                category_id: props.movie
+                    ? props.movie.categories.map((a) => a.id)
+                    : [],
+                rating: props.movie ? props.movie.rating : 1,
+            },
+            virtualForm: new FormData(),
             isLoading: false,
             videoQuality: ["HD", "Full HD"],
+            imgSrc: props.movie ? props.movie.thumbnail : "",
+            videoSrc: props.movie ? props.movie.video : "",
         });
 
         const formRef = ref();
 
+        const videoRef = ref();
+
+        const submitForm = (formRef) => {
+            state.isLoading = true;
+            formRef.validate((valid) => {
+                if (valid) {
+                    state.virtualForm.append("title", state.form.title);
+                    state.virtualForm.append("casts", state.form.casts);
+                    for (var i = 0; i < state.form.category_id.length; i++) {
+                        state.virtualForm.append(
+                            "categories[]",
+                            state.form.category_id[i]
+                        );
+                    }
+                    state.virtualForm.append(
+                        "country_id",
+                        state.form.country_id
+                    );
+                    state.virtualForm.append(
+                        "description",
+                        state.form.description
+                    );
+                    state.virtualForm.append("director", state.form.director);
+                    state.virtualForm.append(
+                        "release_year",
+                        state.form.release_year
+                    );
+                    state.virtualForm.append(
+                        "running_time",
+                        state.form.running_time
+                    );
+                    state.virtualForm.append("type_id", state.form.type_id);
+                    state.virtualForm.append(
+                        "video_quality",
+                        state.form.video_quality
+                    );
+
+                    state.virtualForm.append("rating", state.form.rating);
+
+                    if (props.title === "Create") {
+                        router.post(
+                            route("admin.movies.store"),
+                            state.virtualForm,
+                            {
+                                onSuccess: (page) => {
+                                    state.isLoading = false;
+                                    ElMessage.success(page.props.flash.success);
+                                    formRef.resetFields();
+                                },
+                                onError: () => {
+                                    state.isLoading = false;
+                                    formRef.resetFields();
+                                },
+                            }
+                        );
+                    } else {
+                        router.post(
+                            route("admin.movies.update", props.movie.id),
+                            state.virtualForm,
+                            {
+                                onSuccess: (page) => {
+                                    state.isLoading = false;
+                                    ElMessage.success(page.props.flash.success);
+                                    formRef.resetFields();
+                                },
+                                onError: () => {
+                                    state.isLoading = false;
+                                    formRef.resetFields();
+                                    ElMessage.error(page.props.flash.error);
+                                },
+                            }
+                        );
+                    }
+                }
+            });
+        };
+
+        // upload Image
+        const selectImage = () => {
+            var upload = document.getElementById("upload");
+            upload.click();
+        };
+
+        const uploadVideo = () => {
+            state.virtualForm.append("video", videoRef.value.files[0]);
+        };
+
+        const loadFile = (event) => {
+            var input = event.target;
+            var file = input.files[0];
+
+            state.imgSrc = URL.createObjectURL(file);
+
+            state.virtualForm.append("cover", file);
+
+            var output = document.getElementById("preview_img");
+            output.src = URL.createObjectURL(file);
+            output.onload = function () {
+                URL.revokeObjectURL(output.src); // free memory
+            };
+        };
+
         return {
             ...toRefs(state),
             formRef,
+            loadFile,
+            selectImage,
+            submitForm,
+            uploadVideo,
+            videoRef,
         };
     },
 };

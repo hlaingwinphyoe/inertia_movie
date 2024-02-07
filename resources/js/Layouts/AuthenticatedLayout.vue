@@ -2,10 +2,10 @@
     <section>
         <!--Sidebar-->
         <div class="flex gap-6">
-            <div class="w-[20%]">
+            <div class="w-[18%]">
                 <AppSidebar></AppSidebar>
             </div>
-            <div class="w-[80%] pl-0 p-2 pr-3">
+            <div class="w-[82%] pl-0 p-2 pr-3">
                 <!-- <AppHeader /> -->
                 <slot />
             </div>

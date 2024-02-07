@@ -1,6 +1,6 @@
 <template>
     <div
-        class="border-r border-secondary-700 h-screen block divide-y divide-secondary-700"
+        class="border-r border-secondary-500 h-screen block divide-y divide-secondary-500"
     >
         <div class="flex gap-4 items-center justify-center p-5">
             <ApplicationLogo class="h-7 text-white" />
@@ -19,7 +19,11 @@
                 </h4>
             </div>
             <div>
-                <a href="#" class="px-3 py-2 rounded">
+                <a
+                    href="javascript:void(0)"
+                    @click="handleLogout"
+                    class="px-3 py-2 rounded"
+                >
                     <font-awesome-icon :icon="['fas', 'right-from-bracket']" />
                 </a>
             </div>
@@ -57,18 +61,50 @@
 <script>
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import { reactive, toRefs } from "vue";
-import { usePage } from "@inertiajs/vue3";
+import { Link, router, usePage } from "@inertiajs/vue3";
 import NavLink from "@/Components/NavLink.vue";
+import { ElMessage, ElMessageBox } from "element-plus";
 
 export default {
-    components: { ApplicationLogo, NavLink },
+    components: { ApplicationLogo, NavLink, Link },
     setup() {
         const state = reactive({
             auth: usePage().props.auth,
         });
 
+        const handleLogout = () => {
+            ElMessageBox.confirm(
+                "Are you sure you want to logout?",
+                "Warning",
+                {
+                    confirmButtonText: "Log Out",
+                    cancelButtonText: "Cancel",
+                    type: "warning",
+                    draggable: true,
+                    closeOnClickModal: false,
+                }
+            )
+                .then(() => {
+                    router.post(route("logout"), {
+                        onSuccess: (page) => {
+                            ElMessage.success(page.props.flash.success);
+                        },
+                        onError: (page) => {
+                            ElMessage.error(page.props.flash.error);
+                        },
+                    });
+                })
+                .catch(() => {
+                    ElMessage({
+                        type: "info",
+                        message: "Cancel",
+                    });
+                });
+        };
+
         return {
             ...toRefs(state),
+            handleLogout,
         };
     },
 };

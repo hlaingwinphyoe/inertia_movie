@@ -53,7 +53,7 @@
                             <td class="px-6 py-3.5">{{ row.id }}</td>
                             <td class="px-6 py-3.5">{{ row.name }}</td>
                             <td class="px-6 py-3.5">
-                                {{ dateFormat(row.created_at) }}
+                                {{ row.created_at }}
                             </td>
                             <td class="px-6 py-3.5">
                                 <el-tooltip
@@ -111,7 +111,6 @@ import Breadcrumb from "@/Components/Breadcrumb.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { reactive, toRefs } from "vue";
 import Dialog from "./Dialog.vue";
-import { dateFormat } from "@/utils/date-format.js";
 import { router } from "@inertiajs/vue3";
 import { ElMessage, ElMessageBox } from "element-plus";
 import Pagination from "@/Shared/Pagination.vue";
@@ -148,7 +147,7 @@ export default {
         };
 
         const deleteHandler = (id) => {
-            ElMessageBox.confirm("Are you sure you want to delete", "Warning", {
+            ElMessageBox.confirm("Are you sure you want to delete?", "Warning", {
                 confirmButtonText: "Confirm",
                 cancelButtonText: "Cancel",
                 type: "warning",
@@ -180,7 +179,6 @@ export default {
             closeDialog,
             handleEdit,
             deleteHandler,
-            dateFormat,
         };
     },
 };
