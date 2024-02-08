@@ -24,8 +24,8 @@ class MovieStoreRequest extends FormRequest
         return [
             "title" => "required|string|min:3",
             "casts" => "required",
-            "categories" => "required",
-            "categories.*" => "numeric|exists:categories,id",
+            "genres" => "required",
+            "genres.*" => "numeric|exists:genres,id",
             "country_id" => "required|numeric|exists:countries,id",
             "description" => "required|string|min:10",
             "director" => "required|string",

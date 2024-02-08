@@ -3,7 +3,7 @@
         <div class="text-white pl-0 p-2">
             <div class="flex justify-between items-center">
                 <h4 class="text-xl font-bold">
-                    Types
+                    Genres
                     <small class="ml-2 text-gray-500 font-thin text-[13px]"
                         >{{ total }} Total</small
                     >
@@ -13,16 +13,22 @@
                     <el-breadcrumb-item
                         ><a href="/">Movie Lists</a></el-breadcrumb-item
                     >
-                    <el-breadcrumb-item>Types</el-breadcrumb-item>
+                    <el-breadcrumb-item>Genres</el-breadcrumb-item>
                 </Breadcrumb>
             </div>
 
             <!-- Form -->
             <div class="flex items-center justify-between my-4">
-                <el-button @click="addNew" class="app-button">
-                    <font-awesome-icon icon="fa-solid fa-plus" />
-                    Add New
-                </el-button>
+                <div class="flex items-center">
+                    <el-button @click="addNew" class="app-button">
+                        <font-awesome-icon icon="fa-solid fa-plus" />
+                        <span class="ml-1">Add New</span>
+                    </el-button>
+                    <el-button type="success" @click="generateItem">
+                        <font-awesome-icon :icon="['fas', 'server']" />
+                        <span class="ml-1">Generate</span>
+                    </el-button>
+                </div>
                 <div>
                     <el-input placeholder="Search..." size="large" />
                 </div>
@@ -47,7 +53,7 @@
                     <tbody>
                         <tr
                             class="border-b border-secondary-700"
-                            v-for="row in types.data"
+                            v-for="row in genres.data"
                             :key="row.id"
                         >
                             <td class="px-6 py-3.5">{{ row.id }}</td>
@@ -93,7 +99,7 @@
                     </tbody>
                 </table>
 
-                <Pagination :links="types.links" />
+                <Pagination :links="genres.links" />
             </div>
         </div>
 
@@ -115,7 +121,7 @@ import { router } from "@inertiajs/vue3";
 import { ElMessage, ElMessageBox } from "element-plus";
 import Pagination from "@/Shared/Pagination.vue";
 export default {
-    props: ["types", "filters"],
+    props: ["genres", "filters"],
     components: {
         Breadcrumb,
         AuthenticatedLayout,
@@ -130,7 +136,7 @@ export default {
                 dialogTitle: "",
                 dialogData: {},
             },
-            total: props.types.total,
+            total: props.genres.total,
             search: props.filters ?? "",
         });
 
@@ -146,16 +152,32 @@ export default {
             state.showDialog = true;
         };
 
+        const generateItem = () => {
+            router.post(
+                route("admin.genres.generate"),
+                {},
+                {
+                    onSuccess: (page) => {
+                        ElMessage.success(page.props.flash.success);
+                    },
+                }
+            );
+        };
+
         const deleteHandler = (id) => {
-            ElMessageBox.confirm("Are you sure you want to delete?", "Warning", {
-                confirmButtonText: "Confirm",
-                cancelButtonText: "Cancel",
-                type: "warning",
-                draggable: true,
-                closeOnClickModal: false,
-            })
+            ElMessageBox.confirm(
+                "Are you sure you want to delete?",
+                "Warning",
+                {
+                    confirmButtonText: "Confirm",
+                    cancelButtonText: "Cancel",
+                    type: "warning",
+                    draggable: true,
+                    closeOnClickModal: false,
+                }
+            )
                 .then(() => {
-                    router.delete(route("admin.types.destroy", id), {
+                    router.delete(route("admin.genres.destroy", id), {
                         onSuccess: (page) => {
                             ElMessage.success(page.props.flash.success);
                         },
@@ -179,6 +201,7 @@ export default {
             closeDialog,
             handleEdit,
             deleteHandler,
+            generateItem,
         };
     },
 };

@@ -41,18 +41,18 @@
                 <span class="ml-3">Movies List</span>
             </NavLink>
             <NavLink
-                href="/admin/categories"
-                :active="route().current('admin.categories.index')"
+                href="/admin/genres"
+                :active="route().current('admin.genres.index')"
             >
                 <font-awesome-icon :icon="['fas', 'layer-group']" />
-                <span class="ml-3">Category</span>
+                <span class="ml-3">Genre</span>
             </NavLink>
             <NavLink
-                href="/admin/types"
-                :active="route().current('admin.types.index')"
+                href="/admin/tags"
+                :active="route().current('admin.tags.index')"
             >
-                <font-awesome-icon :icon="['fas', 'grip']" />
-                <span class="ml-3">Type</span>
+                <font-awesome-icon :icon="['fas', 'grip']" class="ml-0.5" />
+                <span class="ml-3">Tags</span>
             </NavLink>
         </div>
     </div>

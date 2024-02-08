@@ -21,6 +21,9 @@
                 ]"
             >
                 <el-input v-model="form.name" placeholder="" />
+                <div v-if="form.errors.name" class="text-red-600">
+                    {{ form.errors.name }}
+                </div>
             </el-form-item>
         </el-form>
         <template #footer>
@@ -36,7 +39,7 @@
 
 <script>
 import { reactive, ref, toRefs } from "vue";
-import { router } from "@inertiajs/vue3";
+import { useForm } from "@inertiajs/vue3";
 import { ElMessage } from "element-plus";
 export default {
     props: ["show", "title", "data"],
@@ -44,23 +47,25 @@ export default {
     setup(props, context) {
         const state = reactive({
             dialogTitle: "",
-            form: {},
             doubleClick: false,
         });
 
         const formRef = ref();
+
+        const form = useForm({
+            name: "",
+        });
 
         const submitDialog = (formRef) => {
             formRef.validate((valid) => {
                 if (valid) {
                     if (state.dialogTitle === "Create") {
                         state.doubleClick = true;
-                        router.post(route("admin.types.store"), state.form, {
+                        form.post(route("admin.tags.store"), {
                             onSuccess: (page) => {
                                 state.doubleClick = false;
                                 closeDialog(formRef);
                                 ElMessage.success(page.props.flash.success);
-                                formRef.resetFields();
                             },
                             onError: () => {
                                 state.doubleClick = false;
@@ -68,35 +73,30 @@ export default {
                         });
                     } else {
                         state.doubleClick = true;
-                        router.patch(
-                            route("admin.types.update", props.data.id),
-                            state.form,
-                            {
-                                onSuccess: (page) => {
-                                    state.doubleClick = false;
-                                    closeDialog(formRef);
-                                    ElMessage.success(page.props.flash.success);
-                                    formRef.resetFields();
-                                },
-                                onError: () => {
-                                    state.doubleClick = false;
-                                },
-                            }
-                        );
+                        form.patch(route("admin.tags.update", props.data.id), {
+                            onSuccess: (page) => {
+                                state.doubleClick = false;
+                                closeDialog(formRef);
+                                ElMessage.success(page.props.flash.success);
+                            },
+                            onError: () => {
+                                state.doubleClick = false;
+                            },
+                        });
                     }
                 }
             });
         };
 
         const closeDialog = (formRef) => {
-            state.form = {};
+            form.reset();
             formRef.resetFields();
             context.emit("closed");
         };
 
         const openDialog = () => {
             state.dialogTitle = props.title;
-            state.form.name = props.data.name ?? "";
+            form.name = props.data.name ?? "";
         };
 
         return {
@@ -105,6 +105,7 @@ export default {
             formRef,
             closeDialog,
             submitDialog,
+            form,
         };
     },
 };

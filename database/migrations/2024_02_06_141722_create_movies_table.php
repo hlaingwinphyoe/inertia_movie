@@ -13,32 +13,31 @@ return new class extends Migration
     {
         Schema::create('movies', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('tmdb_id')->nullable();
             $table->string('slug')->unique();
             $table->string('title', 1024);
             $table->text('excerpt');
             $table->longText('description');
-            $table->text('casts');
-            $table->string('director');
+            $table->string('director')->nullable();
             $table->string('release_year');
             $table->text('video')->nullable();
             $table->text('thumbnail')->nullable();
             $table->integer('size')->nullable();
             $table->double('rating', 2, 1)->default(0);
-            $table->bigInteger('movie_views')->unsigned()->default(0)->index();
+            $table->bigInteger('views')->unsigned()->default(1)->index();
             $table->string('video_quality');
             $table->string('running_time')->nullable();
             $table->boolean('is_published')->default(false);
-            $table->foreignId('type_id')->constrained()->cascadeOnDelete();
             $table->foreignId('country_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
 
-        Schema::create('movie_cates', function (Blueprint $table) {
-            $table->foreignId('category_id')->constrained()->cascadeOnDelete();
+        Schema::create('movie_genres', function (Blueprint $table) {
+            $table->foreignId('genre_id')->constrained()->cascadeOnDelete();
             $table->foreignId('movie_id')->constrained()->cascadeOnDelete();
 
-            $table->primary(['category_id', 'movie_id'], 'category_movie_key');
+            $table->primary(['genre_id', 'movie_id'], 'genre_movie_key');
         });
     }
 

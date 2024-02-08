@@ -27,20 +27,27 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('genres', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('tmdb_id')->unique()->nullable();
             $table->string('slug');
-            $table->string('name');
+            $table->string('name')->unique();
             $table->integer('priority')->default(999);
             $table->timestamps();
         });
 
-        Schema::create('types', function (Blueprint $table) {
+        Schema::create('tags', function (Blueprint $table) {
             $table->id();
+            $table->string('name')->unique();
             $table->string('slug');
-            $table->string('name');
             $table->integer('priority')->default(999);
             $table->timestamps();
+        });
+
+        Schema::create('taggables', function (Blueprint $table) {
+            $table->integer("tag_id");
+            $table->integer("taggable_id");
+            $table->string("taggable_type");
         });
     }
 
@@ -49,7 +56,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
-        Schema::dropIfExists('types');
+        Schema::dropIfExists('genres');
+        Schema::dropIfExists('tags');
+        Schema::dropIfExists('taggables');
     }
 };

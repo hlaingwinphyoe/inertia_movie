@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
-class Category extends Model
+class Genre extends Model
 {
     use HasFactory, HasSlug;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name','tmdb_id'];
 
     public function getSlugOptions(): SlugOptions
     {
@@ -22,6 +22,6 @@ class Category extends Model
 
     public function movies()
     {
-        return $this->belongsToMany(Movie::class, 'movie_cates', 'category_id', 'movie_id');
+        return $this->belongsToMany(Movie::class, 'movie_genres', 'genre_id', 'movie_id');
     }
 }

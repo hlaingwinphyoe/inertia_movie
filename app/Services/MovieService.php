@@ -31,7 +31,7 @@ class MovieService
 
         $movie->save();
 
-        $movie->categories()->sync($paramData['categories']);
+        $movie->genres()->sync($paramData['genres']);
 
         return $movie;
     }
@@ -52,7 +52,7 @@ class MovieService
 
         $model->update();
 
-        $model->categories()->sync($paramData['categories']);
+        $model->genres()->sync($paramData['genres']);
 
         return $model;
     }

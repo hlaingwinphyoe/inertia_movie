@@ -1,18 +1,17 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\MovieStoreRequest;
-use App\Models\Category;
+use App\Models\Genre;
 use App\Models\Country;
 use App\Models\Movie;
+use App\Models\Tag;
 use App\Models\Type;
 use App\Services\MediaService;
 use App\Services\MovieService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class MovieController extends Controller
@@ -27,14 +26,14 @@ class MovieController extends Controller
 
     public function index()
     {
-        $movies = Movie::with('type', 'categories', 'status')->latest()
+        $movies = Movie::with('type', 'genres', 'status')->latest()
             ->paginate(10)
             ->withQueryString()
             ->through(fn ($movie) => [
                 'id' => $movie->id,
                 'title' => $movie->title,
-                'type' => $movie->type->name,
-                'categories' => $movie->getCategories(),
+                // 'type' => $movie->type->name,
+                'genres' => $movie->getGenres(),
                 'is_published' => $movie->is_published,
                 'views' => $movie->movie_views,
                 'created_at' => $movie->created_at->diffForHumans(),
@@ -51,13 +50,13 @@ class MovieController extends Controller
     public function create()
     {
         $countries = Country::orderBy('name', 'ASC')->get();
-        $categories = Category::orderBy('name', 'ASC')->get();
-        $types = Type::orderBy('name', 'ASC')->get();
+        $genres = Genre::orderBy('name', 'ASC')->get();
+        $types = Tag::orderBy('name', 'ASC')->get();
 
         return Inertia::render('Movie-Settings/Movie/Create', [
             'title' => "Create",
             'countries' => $countries,
-            'categories' => $categories,
+            'genres' => $genres,
             'types' => $types
         ]);
     }
@@ -93,15 +92,15 @@ class MovieController extends Controller
     public function edit(Movie $movie)
     {
         $countries = Country::orderBy('name', 'ASC')->get();
-        $categories = Category::orderBy('name', 'ASC')->get();
+        $genres = Genre::orderBy('name', 'ASC')->get();
         $types = Type::orderBy('name', 'ASC')->get();
 
         return Inertia::render('Movie-Settings/Movie/Create', [
             'title' => "Edit",
             'countries' => $countries,
-            'categories' => $categories,
+            'genres' => $genres,
             'types' => $types,
-            'movie' => $movie->loadMissing('categories'),
+            'movie' => $movie->loadMissing('genres'),
         ]);
     }
 

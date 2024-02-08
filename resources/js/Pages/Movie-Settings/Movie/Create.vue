@@ -208,7 +208,7 @@
                     </el-form-item>
                 </div>
                 <div class="grid grid-cols-4 gap-4">
-                    <el-form-item
+                    <!-- <el-form-item
                         class="col-span-1"
                         label="Movie Type"
                         :rules="[
@@ -221,27 +221,27 @@
                     >
                         <el-radio-group v-model="form.type_id">
                             <el-radio-button
-                                v-for="item in types"
+                                v-for="item in tags"
                                 :key="item.id"
                                 :label="item.id"
                                 >{{ item.name }}
                             </el-radio-button>
                         </el-radio-group>
-                    </el-form-item>
+                    </el-form-item> -->
                     <el-form-item
                         class="col-span-2"
-                        label="Category"
+                        label="Genre"
                         size="large"
                         :rules="[
                             {
                                 required: true,
-                                message: 'Category is required',
+                                message: 'Genre is required',
                                 trigger: 'blur',
                             },
                         ]"
                     >
                         <el-select
-                            v-model="form.category_id"
+                            v-model="form.genre_id"
                             multiple
                             collapse-tags
                             collapse-tags-tooltip
@@ -250,7 +250,7 @@
                             size="large"
                         >
                             <el-option
-                                v-for="item in categories"
+                                v-for="item in genres"
                                 :key="item.slug"
                                 :label="item.name"
                                 :value="item.id"
@@ -320,7 +320,7 @@ import Breadcrumb from "@/Components/Breadcrumb.vue";
 import { reactive, ref, toRefs } from "vue";
 import { ElMessage } from "element-plus";
 export default {
-    props: ["title", "categories", "types", "countries", "movie"],
+    props: ["title", "genres", "types", "countries", "movie"],
     components: { AuthenticatedLayout, Link, Breadcrumb },
     setup(props) {
         const state = reactive({
@@ -334,8 +334,8 @@ export default {
                 country_id: props.movie ? props.movie.country_id : "",
                 type_id: props.movie ? props.movie.type_id : "",
                 video_quality: props.movie ? props.movie.video_quality : "",
-                category_id: props.movie
-                    ? props.movie.categories.map((a) => a.id)
+                genre_id: props.movie
+                    ? props.movie.genres.map((a) => a.id)
                     : [],
                 rating: props.movie ? props.movie.rating : 1,
             },
@@ -356,10 +356,10 @@ export default {
                 if (valid) {
                     state.virtualForm.append("title", state.form.title);
                     state.virtualForm.append("casts", state.form.casts);
-                    for (var i = 0; i < state.form.category_id.length; i++) {
+                    for (var i = 0; i < state.form.genre_id.length; i++) {
                         state.virtualForm.append(
-                            "categories[]",
-                            state.form.category_id[i]
+                            "genres[]",
+                            state.form.genre_id[i]
                         );
                     }
                     state.virtualForm.append(

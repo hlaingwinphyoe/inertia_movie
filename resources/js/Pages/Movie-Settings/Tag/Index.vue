@@ -3,7 +3,7 @@
         <div class="text-white pl-0 p-2">
             <div class="flex justify-between items-center">
                 <h4 class="text-xl font-bold">
-                    Categories
+                    Tags
                     <small class="ml-2 text-gray-500 font-thin text-[13px]"
                         >{{ total }} Total</small
                     >
@@ -13,7 +13,7 @@
                     <el-breadcrumb-item
                         ><a href="/">Movie Lists</a></el-breadcrumb-item
                     >
-                    <el-breadcrumb-item>Categories</el-breadcrumb-item>
+                    <el-breadcrumb-item>Tags</el-breadcrumb-item>
                 </Breadcrumb>
             </div>
 
@@ -47,7 +47,7 @@
                     <tbody>
                         <tr
                             class="border-b border-secondary-700"
-                            v-for="row in categories.data"
+                            v-for="row in tags.data"
                             :key="row.id"
                         >
                             <td class="px-6 py-3.5">{{ row.id }}</td>
@@ -93,7 +93,7 @@
                     </tbody>
                 </table>
 
-                <Pagination :links="categories.links" />
+                <Pagination :links="tags.links" />
             </div>
         </div>
 
@@ -115,7 +115,7 @@ import { router } from "@inertiajs/vue3";
 import { ElMessage, ElMessageBox } from "element-plus";
 import Pagination from "@/Shared/Pagination.vue";
 export default {
-    props: ["categories", "filters"],
+    props: ["tags", "filters"],
     components: {
         Breadcrumb,
         AuthenticatedLayout,
@@ -130,7 +130,7 @@ export default {
                 dialogTitle: "",
                 dialogData: {},
             },
-            total: props.categories.total,
+            total: props.tags.total,
             search: props.filters ?? "",
         });
 
@@ -155,7 +155,7 @@ export default {
                 closeOnClickModal: false,
             })
                 .then(() => {
-                    router.delete(route("admin.categories.destroy", id), {
+                    router.delete(route("admin.tags.destroy", id), {
                         onSuccess: (page) => {
                             ElMessage.success(page.props.flash.success);
                         },

@@ -22,14 +22,14 @@ class Movie extends Model
             ->saveSlugsTo('slug');
     }
 
-    public function categories(): BelongsToMany
+    public function genres(): BelongsToMany
     {
-        return $this->belongsToMany(Category::class, 'movie_cates', 'movie_id', 'category_id');
+        return $this->belongsToMany(Genre::class, 'movie_genres', 'movie_id', 'genre_id');
     }
 
-    public function type(): BelongsTo
+    public function tag(): BelongsTo
     {
-        return $this->belongsTo(Type::class);
+        return $this->belongsTo(Tag::class);
     }
 
     public function user(): BelongsTo
@@ -42,13 +42,13 @@ class Movie extends Model
         return $this->belongsTo(Status::class);
     }
 
-    public function getCategories()
+    public function getGenres()
     {
         $name = '';
 
-        foreach ($this->categories as $category) {
+        foreach ($this->genres as $genre) {
             $name .= $name ? ', ' : '';
-            $name .= $category->name;
+            $name .= $genre->name;
         }
 
         return $name;

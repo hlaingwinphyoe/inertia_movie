@@ -42,7 +42,7 @@
                             <th scope="col" class="px-6 py-3.5">Cover</th>
                             <th scope="col" class="px-6 py-3.5">Title</th>
                             <th scope="col" class="px-6 py-3.5">Rating</th>
-                            <th scope="col" class="px-6 py-3.5">Category</th>
+                            <th scope="col" class="px-6 py-3.5">Genre</th>
                             <th scope="col" class="px-6 py-3.5">Type</th>
                             <th scope="col" class="px-6 py-3.5">Views</th>
                             <th scope="col" class="px-6 py-3.5">Published</th>
@@ -74,7 +74,7 @@
                                 />
                                 {{ row.rating }}
                             </td>
-                            <td class="px-6 py-3.5">{{ row.categories }}</td>
+                            <td class="px-6 py-3.5">{{ row.genres }}</td>
                             <td class="px-6 py-3.5">{{ row.type }}</td>
                             <td class="px-6 py-3.5">{{ row.views }}</td>
                             <td class="px-6 py-3.5">
