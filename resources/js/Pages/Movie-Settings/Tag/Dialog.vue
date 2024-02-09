@@ -29,7 +29,7 @@
         <template #footer>
             <div class="dialog-footer">
                 <el-button @click="closeDialog(formRef)">Cancel</el-button>
-                <el-button class="app-button" @click="submitDialog(formRef)">
+                <el-button type="primary" @click="submitDialog(formRef)">
                     Save
                 </el-button>
             </div>

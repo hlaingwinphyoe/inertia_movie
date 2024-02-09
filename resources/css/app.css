@@ -22,24 +22,6 @@ body {
     padding-right: 3px;
 }
 
-.app-button {
-    background: #04a3d8 !important;
-    color: #fff !important;
-    border-color: #04a3d8 !important;
-}
-
-.app-button:hover,
-.app-button:focus {
-    background: rgba(#04a3d8, 0.7) !important;
-    color: #fff !important;
-    border-color: rgba(#04a3d8, 0.7) !important;
-}
-
-.el-radio-button__original-radio:checked+.el-radio-button__inner{
-    background-color: #04a3d8 !important;
-    border-color: #04a3d8 !important;
-}
-
 .el-breadcrumb__inner,
 .el-breadcrumb__inner a {
     color: #fff !important;
@@ -61,7 +43,9 @@ body {
     box-sizing: border-box;
 }
 
-[type="text"]:focus {
+[type="text"]:focus,
+[type="password"]:focus,
+[type="number"]:focus {
     outline-offset: 0 !important;
     outline: none !important;
     border: 0 !important;

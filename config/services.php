@@ -16,7 +16,8 @@ return [
 
     'tmdb' => [
         'secret' => env('TMDB_SECRET', 'f646519575c52c16b60a11106841d46c'),
-        'endpoint' => env('TMDB_ENDPOINT', 'https://api.themoviedb.org/3/')
+        'endpoint' => env('TMDB_ENDPOINT', 'https://api.themoviedb.org/3/'),
+        'image_path' => env('TMDB_IMAGE_PATH', 'https://image.tmdb.org/t/p/original/')
     ],
 
     'mailgun' => [

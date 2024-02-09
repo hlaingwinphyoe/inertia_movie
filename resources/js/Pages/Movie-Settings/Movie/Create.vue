@@ -300,7 +300,7 @@
                     </el-form-item>
                 </div>
                 <div class="pt-5 border-t border-[#4C4D4F]">
-                    <el-button class="app-button" @click="submitForm(formRef)">
+                    <el-button type="primary" @click="submitForm(formRef)">
                         <font-awesome-icon :icon="['fas', 'floppy-disk']" />
                         <span v-if="title == 'Create'" class="ml-1.5"
                             >Publish</span

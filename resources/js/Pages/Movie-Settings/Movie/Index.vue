@@ -17,7 +17,7 @@
             <!-- Form -->
             <div class="flex items-center justify-between my-4">
                 <Link :href="route('admin.movies.create')">
-                    <el-button class="app-button">
+                    <el-button type="primary">
                         <font-awesome-icon icon="fa-solid fa-plus" />
                         Add New
                     </el-button>

@@ -20,7 +20,7 @@
             <!-- Form -->
             <div class="flex items-center justify-between my-4">
                 <div class="flex items-center">
-                    <el-button @click="addNew" class="app-button">
+                    <el-button @click="addNew" type="primary">
                         <font-awesome-icon icon="fa-solid fa-plus" />
                         <span class="ml-1">Add New</span>
                     </el-button>
@@ -30,76 +30,87 @@
                     </el-button>
                 </div>
                 <div>
-                    <el-input placeholder="Search..." size="large" />
+                    <el-input placeholder="Search..." v-model="param.search" />
                 </div>
             </div>
 
             <!-- Main -->
 
             <div class="relative overflow-x-auto">
-                <table
-                    class="w-full border-y border-gray-800 text-sm text-left text-gray-400"
+                <el-table
+                    :data="genres.data"
+                    :default-sort="{ prop: 'name', order: 'ascending' }"
+                    table-layout="fixed"
                 >
-                    <thead
-                        class="text-xs uppercase text-gray-200 bg-secondary-600"
-                    >
-                        <tr>
-                            <th scope="col" class="px-6 py-3.5">#</th>
-                            <th scope="col" class="px-6 py-3.5">Name</th>
-                            <th scope="col" class="px-6 py-3.5">Created</th>
-                            <th scope="col" class="px-6 py-3.5">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr
-                            class="border-b border-secondary-700"
-                            v-for="row in genres.data"
-                            :key="row.id"
-                        >
-                            <td class="px-6 py-3.5">{{ row.id }}</td>
-                            <td class="px-6 py-3.5">{{ row.name }}</td>
-                            <td class="px-6 py-3.5">
-                                {{ row.created_at }}
-                            </td>
-                            <td class="px-6 py-3.5">
-                                <el-tooltip
-                                    class="box-item"
-                                    content="Edit"
-                                    placement="top"
-                                >
-                                    <el-button
-                                        type="warning"
-                                        style="margin-bottom: 5px"
-                                        circle
-                                        @click="handleEdit(row)"
-                                    >
-                                        <font-awesome-icon
-                                            icon="fa-regular fa-pen-to-square"
-                                        />
-                                    </el-button>
-                                </el-tooltip>
-                                <el-tooltip
-                                    class="box-item"
-                                    content="Delete"
-                                    placement="top"
-                                >
-                                    <el-button
-                                        type="danger"
-                                        circle
-                                        style="margin-bottom: 5px"
-                                        @click="deleteHandler(row.id)"
-                                    >
-                                        <font-awesome-icon
-                                            :icon="['fas', 'trash-can']"
-                                        />
-                                    </el-button>
-                                </el-tooltip>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                    <el-table-column
+                        type="index"
+                        label="Sr."
+                        width="150"
+                    />
+                    <el-table-column
+                        prop="name"
+                        label="Name"
+                        sortable
+                        align="center"
+                    />
 
-                <Pagination :links="genres.links" />
+                    <el-table-column
+                        prop="created_at"
+                        label="Created At"
+                        sortable
+                        align="center"
+                    />
+                    <el-table-column label="Actions" align="center">
+                        <template #default="scope">
+                            <el-tooltip
+                                class="box-item"
+                                content="Edit"
+                                placement="top"
+                            >
+                                <el-button
+                                    type="warning"
+                                    style="margin-bottom: 5px"
+                                    circle
+                                    @click="handleEdit(scope.row)"
+                                >
+                                    <font-awesome-icon
+                                        icon="fa-regular fa-pen-to-square"
+                                    />
+                                </el-button>
+                            </el-tooltip>
+                            <el-tooltip
+                                class="box-item"
+                                content="Delete"
+                                placement="top"
+                            >
+                                <el-button
+                                    type="danger"
+                                    circle
+                                    style="margin-bottom: 5px"
+                                    @click="deleteHandler(scope.row.id)"
+                                >
+                                    <font-awesome-icon
+                                        :icon="['fas', 'trash-can']"
+                                    />
+                                </el-button>
+                            </el-tooltip>
+                        </template>
+                    </el-table-column>
+                </el-table>
+
+                <div class="my-5 flex items-center justify-center">
+                    <el-pagination
+                        :hide-on-single-page="total < param.page_size"
+                        @size-change="onSizeChange"
+                        @current-change="onCurrentChange"
+                        :page-size="param.page_size"
+                        :background="true"
+                        :page-sizes="pageList"
+                        :current-page="param.page"
+                        :layout="`total,sizes,prev,pager,next,jumper`"
+                        :total="total"
+                    />
+                </div>
             </div>
         </div>
 
@@ -115,18 +126,17 @@
 <script>
 import Breadcrumb from "@/Components/Breadcrumb.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { reactive, toRefs } from "vue";
+import { reactive, toRefs, watch } from "vue";
 import Dialog from "./Dialog.vue";
 import { router } from "@inertiajs/vue3";
 import { ElMessage, ElMessageBox } from "element-plus";
-import Pagination from "@/Shared/Pagination.vue";
+import debounce from "lodash.debounce";
 export default {
-    props: ["genres", "filters"],
+    props: ["genres"],
     components: {
         Breadcrumb,
         AuthenticatedLayout,
         Dialog,
-        Pagination,
     },
     setup(props) {
         const state = reactive({
@@ -137,7 +147,12 @@ export default {
                 dialogData: {},
             },
             total: props.genres.total,
-            search: props.filters ?? "",
+            pageList: [10, 20, 60, 80, 100],
+            param: {
+                page: 1,
+                page_size: 10,
+                search: "",
+            },
         });
 
         const addNew = () => {
@@ -163,6 +178,31 @@ export default {
                 }
             );
         };
+
+        watch(
+            () => state.param.search,
+            debounce(() => {
+                getData();
+            }, 500)
+        );
+
+        const onSizeChange = (val) => {
+            state.param.page_size = val;
+            getData();
+        };
+
+        const onCurrentChange = (val) => {
+            state.param.page = val;
+            getData();
+        };
+
+        function getData() {
+            router.get("/admin/genres", state.param, {
+                preserveScroll: true,
+                preserveState: true,
+                replace: true,
+            });
+        }
 
         const deleteHandler = (id) => {
             ElMessageBox.confirm(
@@ -202,6 +242,8 @@ export default {
             handleEdit,
             deleteHandler,
             generateItem,
+            onSizeChange,
+            onCurrentChange,
         };
     },
 };

@@ -7,28 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
-class Genre extends Model
+class Cast extends Model
 {
     use HasFactory, HasSlug;
 
-    protected $fillable = ['name', 'tmdb_id'];
+    protected $guarded = [];
 
     public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
             ->generateSlugsFrom('name')
             ->saveSlugsTo('slug');
-    }
-
-    public function movies()
-    {
-        return $this->belongsToMany(Movie::class, 'movie_genres', 'genre_id', 'movie_id');
-    }
-
-    public function scopeFilterOn($q)
-    {
-        if (request('search')) {
-            $q->where('name', 'like', "%" . request('search') . "%");
-        }
     }
 }

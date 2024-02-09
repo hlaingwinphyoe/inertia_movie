@@ -26,7 +26,7 @@ class MovieController extends Controller
 
     public function index()
     {
-        $movies = Movie::with('type', 'genres', 'status')->latest()
+        $movies = Movie::with(['genres', 'status'])->latest()
             ->paginate(10)
             ->withQueryString()
             ->through(fn ($movie) => [
@@ -71,15 +71,32 @@ class MovieController extends Controller
             if ($request->hasFile('cover')) {
                 $mediaFormdata = [
                     'media' => $request->file('cover'),
-                    'type' => 'movie_cover',
+                    'folder' => "movie_cover",
+                    'type' => 'image',
                 ];
 
                 $url = $this->mediaSvc->storeMedia($mediaFormdata);
 
                 $movie->update([
-                    'thumbnail' => $url
+                    'thumbnail' => '/' . $url
                 ]);
             }
+
+            // video save
+            if ($request->hasFile('video')) {
+                $mediaFormdata = [
+                    'media' => $request->file('video'),
+                    'folder' => "movie_trailer",
+                    'type' => 'video',
+                ];
+
+                $url = $this->mediaSvc->storeMedia($mediaFormdata);
+
+                $movie->update([
+                    'video' => $url
+                ]);
+            }
+
             DB::commit();
             return redirect()->route('admin.movies.index')->with('success', 'Successfully Created.');
         } catch (\Exception $e) {

@@ -41,6 +41,13 @@
                 <span class="ml-3">Movies List</span>
             </NavLink>
             <NavLink
+                href="/admin/casts"
+                :active="route().current('admin.casts.index')"
+            >
+                <font-awesome-icon :icon="['fas', 'users']" />
+                <span class="ml-3">Casts</span>
+            </NavLink>
+            <NavLink
                 href="/admin/genres"
                 :active="route().current('admin.genres.index')"
             >

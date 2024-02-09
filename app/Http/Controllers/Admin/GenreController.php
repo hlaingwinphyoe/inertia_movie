@@ -12,11 +12,11 @@ class GenreController extends Controller
 {
     public function index()
     {
-        $genres = Genre::when(request('search'), function ($q, $search) {
-            return $q->where('name', 'like', "%$search%");
-        })
+        $perPage = request('page_size') ?: 10;
+
+        $genres = Genre::query()->filterOn()
             ->latest()
-            ->paginate(10)
+            ->paginate($perPage)
             ->withQueryString()
             ->through(fn ($genre) => [
                 'id' => $genre->id,
@@ -26,7 +26,6 @@ class GenreController extends Controller
 
         return Inertia::render('Movie-Settings/Genre/Index', [
             "genres" => $genres,
-            "filters" => request('search')
         ]);
     }
 
@@ -62,7 +61,7 @@ class GenreController extends Controller
         return redirect()->back()->with('success', "Successfully Deleted.");
     }
 
-    public function generateFromMDB()
+    public function generateGenreFromMDB()
     {
         $tmdb_genres = Http::get(config('services.tmdb.endpoint') . 'genre/movie/list?api_key=' . config('services.tmdb.secret') . '&language=en-US');
 

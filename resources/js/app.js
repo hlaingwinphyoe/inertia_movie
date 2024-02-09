@@ -2,6 +2,7 @@ import "./bootstrap";
 import "../css/app.css";
 import "element-plus/theme-chalk/index.css";
 import "element-plus/theme-chalk/dark/css-vars.css";
+import "../css/el-theme-var.scss";
 import "flowbite";
 
 import { createApp, h } from "vue";
