@@ -31,6 +31,8 @@ class MediaService
                 $img = Image::make($file);
                 $file = $img->fit(270, 350);
                 $file->save($url);
+
+                $url = Storage::url('public/' . $formData['folder'] . '/' . $fileNameToStore);
             } else {
                 $url = $file->storeAs('public', $fileNameToStore);
 

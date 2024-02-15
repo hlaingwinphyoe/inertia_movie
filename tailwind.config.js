@@ -33,7 +33,7 @@ export default {
             "secondary-800": "#181D2D",
             "secondary-900": "#0E1325",
 
-            "yellow": "#e6a23c",
+            yellow: "#e6a23c",
         },
         screens: {
             sm: "640px",
@@ -67,5 +67,9 @@ export default {
         },
     },
 
-    plugins: [forms, require("flowbite/plugin")],
+    plugins: [
+        forms,
+        require("flowbite/plugin"),
+        require("@tailwindcss/aspect-ratio"),
+    ],
 };

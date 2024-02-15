@@ -7,12 +7,14 @@ use App\Http\Requests\MovieStoreRequest;
 use App\Models\Genre;
 use App\Models\Country;
 use App\Models\Movie;
-use App\Models\Tag;
-use App\Models\Type;
 use App\Services\MediaService;
 use App\Services\MovieService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Inertia\Inertia;
+use Illuminate\Support\Str;
 
 class MovieController extends Controller
 {
@@ -51,13 +53,11 @@ class MovieController extends Controller
     {
         $countries = Country::orderBy('name', 'ASC')->get();
         $genres = Genre::orderBy('name', 'ASC')->get();
-        $types = Tag::orderBy('name', 'ASC')->get();
 
         return Inertia::render('Movie-Settings/Movie/Create', [
             'title' => "Create",
             'countries' => $countries,
             'genres' => $genres,
-            'types' => $types
         ]);
     }
 
@@ -78,7 +78,7 @@ class MovieController extends Controller
                 $url = $this->mediaSvc->storeMedia($mediaFormdata);
 
                 $movie->update([
-                    'thumbnail' => '/' . $url
+                    'thumbnail' => $url
                 ]);
             }
 
@@ -110,13 +110,11 @@ class MovieController extends Controller
     {
         $countries = Country::orderBy('name', 'ASC')->get();
         $genres = Genre::orderBy('name', 'ASC')->get();
-        $types = Type::orderBy('name', 'ASC')->get();
 
         return Inertia::render('Movie-Settings/Movie/Create', [
             'title' => "Edit",
             'countries' => $countries,
             'genres' => $genres,
-            'types' => $types,
             'movie' => $movie->loadMissing('genres'),
         ]);
     }
@@ -139,24 +137,7 @@ class MovieController extends Controller
                 $url = $this->mediaSvc->storeMedia($mediaFormdata);
 
                 $movie->update([
-                    'thumbnail' => '/' . $url // folder thumbnail path is in storage
-                ]);
-            }
-
-            // video save
-            if ($request->hasFile('video')) {
-                $mediaFormdata = [
-                    'media' => $request->file('video'),
-                    'folder' => "movie_trailer",
-                    'type' => 'video',
-                ];
-
-                $this->movieSvc->destroyVideo($movie);
-
-                $url = $this->mediaSvc->storeMedia($mediaFormdata);
-
-                $movie->update([
-                    'video' => $url
+                    'thumbnail' => $url
                 ]);
             }
 
@@ -170,7 +151,7 @@ class MovieController extends Controller
 
     public function destroy(Movie $movie)
     {
-        $this->movieSvc->destroyVideo($movie);
+        // $this->movieSvc->destroyVideo($movie);
         $this->movieSvc->destroyImage($movie);
 
         $movie->delete();
@@ -187,5 +168,45 @@ class MovieController extends Controller
         }
 
         return redirect()->back()->with('success', "Successfully Changed.");
+    }
+
+    public function generateMovieFromMDB(Request $request)
+    {
+        $movie = Movie::where('tmdb_id', $request->movieId)->exists();
+        if ($movie) {
+            return redirect()->back()->with('success', 'Movie Already Exists.');
+        }
+
+        $tmdb_movie = Http::asJson()->get(config('services.tmdb.endpoint') . 'movie/' . $request->movieId . '?api_key=' . config('services.tmdb.secret') . '&language=en-US');
+
+        if ($tmdb_movie->successful()) {
+            $movie = Movie::create([
+                'tmdb_id' => $tmdb_movie['id'],
+                'title' => $tmdb_movie['title'],
+                'description' => $tmdb_movie['overview'],
+                'excerpt' => Str::excerpt($tmdb_movie['overview']),
+                'running_time' => $tmdb_movie['runtime'],
+                'rating' => $tmdb_movie['vote_average'],
+                'release_date' => $tmdb_movie['release_date'],
+                'country_id' => Country::where('country_code', $tmdb_movie['production_countries'][0]['iso_3166_1'])->first()->id,
+                'video_quality' => "HD",
+                'is_published' => false,
+                'user_id' => Auth::id(),
+                'thumbnail' => config('services.tmdb.image_path') . $tmdb_movie['poster_path'],
+
+                // 'backdrop_path' => $tmdb_movie['backdrop_path']
+                // 'lang' => $tmdb_movie['original_language'],
+            ]);
+
+            $tmdb_genres = $tmdb_movie['genres'];
+            $tmdb_genres_ids = collect($tmdb_genres)->pluck('id');
+            $genres = Genre::whereIn('tmdb_id', $tmdb_genres_ids)->get();
+
+            $movie->genres()->attach($genres);
+
+            return redirect()->back()->with('success', 'Successfully Created.');
+        } else {
+            return redirect()->back()->with('success', 'Failed. Api Error.');
+        }
     }
 }

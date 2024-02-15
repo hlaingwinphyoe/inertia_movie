@@ -62,7 +62,7 @@ class CastController extends Controller
             $url = $this->mediaSvc->storeMedia($mediaFormdata);
 
             $response->update([
-                'profile' => "/" . $url
+                'profile' => $url
             ]);
         }
 
@@ -86,7 +86,7 @@ class CastController extends Controller
             $url = $this->mediaSvc->storeMedia($mediaFormdata);
 
             $response->update([
-                'profile' => "/" . $url
+                'profile' => $url
             ]);
         }
 
@@ -124,6 +124,6 @@ class CastController extends Controller
             return redirect()->back()->with('success', 'Successfully Created.');
         }
 
-        return redirect()->back()->with('error', 'Failed. Api Error.');
+        return redirect()->back()->with('success', 'Failed. Api Error.');
     }
 }

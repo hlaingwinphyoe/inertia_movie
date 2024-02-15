@@ -1,8 +1,12 @@
 :root {
     --el-color-primary: #04a3d8 !important;
-    --el-bg-color: transparent !important;
+    // --el-bg-color: transparent !important;
 }
 
 .el-table thead {
     background-color: #373b43 !important;
+}
+
+.el-date-editor {
+    --el-date-editor-width: 100% !important;
 }

@@ -16,13 +16,28 @@
 
             <!-- Form -->
             <div class="flex items-center justify-between my-4">
-                <Link :href="route('admin.movies.create')">
-                    <el-button type="primary">
-                        <font-awesome-icon icon="fa-solid fa-plus" />
-                        Add New
-                    </el-button>
-                </Link>
-
+                <div class="flex items-center">
+                    <Link :href="route('admin.movies.create')">
+                        <el-button type="primary">
+                            <font-awesome-icon icon="fa-solid fa-plus" />
+                            Add New
+                        </el-button>
+                    </Link>
+                    <div class="flex gap-2 ml-4">
+                        <el-input
+                            v-model="form.movieId"
+                            placeholder="TMDB Movie ID"
+                        />
+                        <el-button
+                            type="success"
+                            :disabled="form.movieId === '' || form.processing"
+                            @click="generateItem"
+                        >
+                            <font-awesome-icon :icon="['fas', 'server']" />
+                            <span class="ml-1">Generate</span>
+                        </el-button>
+                    </div>
+                </div>
                 <div>
                     <el-input placeholder="Search..." size="large" />
                 </div>
@@ -31,110 +46,101 @@
             <!-- Main -->
 
             <div class="relative overflow-x-auto">
-                <table
-                    class="w-full border-y border-gray-800 text-sm text-left text-gray-400"
+                <el-table
+                    :data="movies.data"
+                    :default-sort="{ prop: 'name', order: 'ascending' }"
+                    table-layout="fixed"
                 >
-                    <thead
-                        class="text-xs uppercase text-gray-200 bg-secondary-600"
-                    >
-                        <tr>
-                            <th scope="col" class="px-6 py-3.5">#</th>
-                            <th scope="col" class="px-6 py-3.5">Cover</th>
-                            <th scope="col" class="px-6 py-3.5">Title</th>
-                            <th scope="col" class="px-6 py-3.5">Rating</th>
-                            <th scope="col" class="px-6 py-3.5">Genre</th>
-                            <th scope="col" class="px-6 py-3.5">Type</th>
-                            <th scope="col" class="px-6 py-3.5">Views</th>
-                            <th scope="col" class="px-6 py-3.5">Published</th>
-                            <th scope="col" class="px-6 py-3.5">Created</th>
-                            <th scope="col" class="px-6 py-3.5">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr
-                            class="border-b border-secondary-700"
-                            v-for="row in movies.data"
-                            :key="row.id"
-                        >
-                            <td class="px-6 py-3.5">{{ row.id }}</td>
-                            <td class="px-6 py-3.5">
-                                <img
-                                    v-if="row.thumbnail"
-                                    :src="row.thumbnail"
-                                    class="w-auto h-10"
-                                    alt=""
-                                />
-                            </td>
-                            <td class="px-6 py-3.5">{{ row.title }}</td>
-                            <td class="px-6 py-3.5">
-                                <font-awesome-icon
-                                    :icon="['fas', 'star']"
-                                    size="xs"
-                                    class="text-yellow-400"
-                                />
-                                {{ row.rating }}
-                            </td>
-                            <td class="px-6 py-3.5">{{ row.genres }}</td>
-                            <td class="px-6 py-3.5">{{ row.type }}</td>
-                            <td class="px-6 py-3.5">{{ row.views }}</td>
-                            <td class="px-6 py-3.5">
-                                <el-switch
-                                    v-model="row.is_published"
-                                    :active-value="1"
-                                    :inactive-value="0"
-                                    active-color="#13ce66"
-                                    inactive-color="#ff4949"
-                                    @change="changeStatus(row)"
-                                />
-                            </td>
-                            <td class="px-6 py-3.5">
-                                {{ row.created_at }}
-                            </td>
-                            <td class="px-6 py-3.5 whitespace-nowrap">
-                                <el-tooltip
-                                    class="box-item"
-                                    content="Edit"
-                                    placement="top"
+                    <el-table-column type="index" label="Sr." width="50" />
+                    <el-table-column label="Rating" align="center">
+                        <template #default="scope">
+                            <el-image
+                                class="w-8 h-10 rounded"
+                                :src="scope.row.thumbnail"
+                                fit="cover"
+                            />
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                        prop="title"
+                        label="Title"
+                        sortable
+                        align="center"
+                    />
+
+                    <el-table-column label="Rating" align="center">
+                        <template #default="scope">
+                            <font-awesome-icon
+                                :icon="['fas', 'star']"
+                                class="text-yellow-300 mr-1 text-xs"
+                            />
+                            <span>{{ scope.row.rating }}</span>
+                        </template>
+                    </el-table-column>
+
+                    <el-table-column
+                        prop="genres"
+                        label="Genres"
+                        align="center"
+                    />
+
+                    <el-table-column
+                        prop="views"
+                        label="Views"
+                        align="center"
+                    />
+
+                    <el-table-column
+                        prop="created_at"
+                        label="Created At"
+                        sortable
+                        align="center"
+                    />
+                    <el-table-column label="Actions" align="center">
+                        <template #default="scope">
+                            <el-tooltip
+                                class="box-item"
+                                content="Edit"
+                                placement="top"
+                            >
+                                <el-button
+                                    type="warning"
+                                    circle
+                                    style="margin-bottom: 5px"
                                 >
-                                    <el-button
-                                        type="warning"
-                                        style="margin-bottom: 5px"
-                                        circle
-                                    >
-                                        <Link
-                                            :href="
-                                                route(
-                                                    'admin.movies.edit',
-                                                    row.id
-                                                )
-                                            "
-                                        >
-                                            <font-awesome-icon
-                                                icon="fa-regular fa-pen-to-square"
-                                            />
-                                        </Link>
-                                    </el-button>
-                                </el-tooltip>
-                                <el-tooltip
-                                    class="box-item"
-                                    content="Delete"
-                                    placement="top"
-                                >
-                                    <el-button
-                                        type="danger"
-                                        circle
-                                        style="margin-bottom: 5px"
-                                        @click="deleteHandler(row.id)"
+                                    <Link
+                                        :href="
+                                            route(
+                                                'admin.movies.edit',
+                                                scope.row.id
+                                            )
+                                        "
                                     >
                                         <font-awesome-icon
-                                            :icon="['fas', 'trash-can']"
+                                            icon="fa-regular fa-pen-to-square"
                                         />
-                                    </el-button>
-                                </el-tooltip>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                                    </Link>
+                                </el-button>
+                            </el-tooltip>
+                            <el-tooltip
+                                class="box-item"
+                                content="Delete"
+                                placement="top"
+                            >
+                                <el-button
+                                    type="danger"
+                                    circle
+                                    style="margin-bottom: 5px"
+                                    @click="deleteHandler(scope.row.id)"
+                                >
+                                    <font-awesome-icon
+                                        :icon="['fas', 'trash-can']"
+                                    />
+                                </el-button>
+                            </el-tooltip>
+                        </template>
+                    </el-table-column>
+                </el-table>
 
                 <Pagination :links="movies.links" />
             </div>
@@ -146,7 +152,7 @@
 import Breadcrumb from "@/Components/Breadcrumb.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { reactive, toRefs } from "vue";
-import { Link, router } from "@inertiajs/vue3";
+import { Link, router, useForm } from "@inertiajs/vue3";
 import { ElMessage, ElMessageBox } from "element-plus";
 import Pagination from "@/Shared/Pagination.vue";
 export default {
@@ -164,6 +170,19 @@ export default {
             total: props.movies.total,
             search: props.filters ?? "",
         });
+
+        const form = useForm({
+            movieId: "",
+        });
+
+        const generateItem = () => {
+            form.post(route("admin.movies.generate"), {
+                onSuccess: (page) => {
+                    form.reset();
+                    ElMessage.success(page.props.flash.success);
+                },
+            });
+        };
 
         const changeStatus = (row) => {
             ElMessageBox.confirm(
@@ -240,6 +259,8 @@ export default {
             closeDialog,
             deleteHandler,
             changeStatus,
+            generateItem,
+            form,
         };
     },
 };

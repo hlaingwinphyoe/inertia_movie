@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('excerpt');
             $table->longText('description');
             $table->string('director')->nullable();
-            $table->string('release_year');
+            $table->date('release_date')->nullable();
             $table->text('video')->nullable();
             $table->text('thumbnail')->nullable();
             $table->integer('size')->nullable();

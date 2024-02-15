@@ -23,18 +23,17 @@ class MovieStoreRequest extends FormRequest
     {
         return [
             "title" => "required|string|min:3",
-            "casts" => "required",
             "genres" => "required",
             "genres.*" => "numeric|exists:genres,id",
             "country_id" => "required|numeric|exists:countries,id",
             "description" => "required|string|min:10",
             "director" => "required|string",
-            "release_year" => "required|string",
+            "release_date" => "required|date",
             "running_time" => "required|string",
-            "type_id" => "required|exists:types,id",
             "video_quality" => "required|string",
             "rating" => "required|numeric|min:0|max:10",
-            "cover" => "nullable|image|mimes:png,jpg"
+            "cover" => "nullable|image|mimes:png,jpg",
+            "trailer_video" => "nullable|string"
         ];
     }
 }

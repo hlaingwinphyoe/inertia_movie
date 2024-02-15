@@ -24,7 +24,17 @@
             >
                 <div class="grid grid-cols-1 lg:grid-cols-4 items-center gap-4">
                     <div class="col-span-1">
-                        <el-form-item label="Cover Photo" size="large">
+                        <el-form-item
+                            label="Cover Photo"
+                            size="large"
+                            :rules="[
+                                {
+                                    required: true,
+                                    message: 'Cover Photo is required',
+                                    trigger: 'blur',
+                                },
+                            ]"
+                        >
                             <div
                                 class="border border-secondary-500 h-80 w-full rounded flex items-center justify-center cursor-pointer overflow-hidden"
                                 @click="selectImage"
@@ -239,36 +249,8 @@
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <el-form-item
-                        label="Trailer Video (Embed Html)"
-                        size="large"
-                    >
-                        <el-input
-                            v-model="form.trailer_video"
-                            placeholder=""
-                            class="mb-3"
-                        />
-
-                        <el-button
-                            type="danger"
-                            plain
-                            size="default"
-                            @click="dialogVisible = true"
-                        >
-                            Play Trailer
-                        </el-button>
-
-                        <el-dialog
-                            v-model="dialogVisible"
-                            title="Trailer Video"
-                            draggable
-                            :before-close="handleClose"
-                        >
-                            <div
-                                class="aspect-w-16 aspect-h-9"
-                                v-html="embed_html"
-                            ></div>
-                        </el-dialog>
+                    <el-form-item label="Trailer Video (Embed Html)" size="large">
+                        <el-input v-model="form.trailer_video" placeholder="" />
 
                         <!-- <input
                             ref="videoRef"
@@ -334,9 +316,7 @@ export default {
             isLoading: false,
             videoQuality: ["HD", "Full HD"],
             imgSrc: props.movie ? props.movie.thumbnail : "",
-            dialogVisible: false,
             // videoSrc: props.movie ? props.movie.video : "",
-            embed_html: props.movie ? props.movie.trailer_video : "",
         });
 
         const formRef = ref();
@@ -398,8 +378,7 @@ export default {
                             }
                         );
                     } else {
-                        state.virtualForm.append("_method", "patch");
-                        router.post(
+                        router.patch(
                             route("admin.movies.update", props.movie.id),
                             state.virtualForm,
                             {

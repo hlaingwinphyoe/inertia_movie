@@ -18,14 +18,13 @@ class MovieService
         $movie->title = $paramData['title'];
         $movie->description = $paramData['description'] ?? '';
         $movie->excerpt = Str::excerpt($paramData['description']);
-        $movie->casts = $paramData['casts'] ?? '';
         $movie->director = $paramData['director'] ?? '';
-        $movie->release_year = $paramData['release_year'] ?? '';
+        $movie->release_date = $paramData['release_date'] ?? '';
         $movie->running_time = $paramData['running_time'] ?? '';
         $movie->video_quality = $paramData['video_quality'] ?? '';
         $movie->country_id = $paramData['country_id'] ?? '';
-        $movie->type_id = $paramData['type_id'] ?? '';
         $movie->rating = $paramData['rating'] ?? 0;
+        $movie->trailer_video = $paramData['trailer_video'] ?? "";
         $movie->is_published = true;
         $movie->user_id = Auth::id();
 
@@ -41,14 +40,15 @@ class MovieService
         $model->title = $paramData['title'];
         $model->description = $paramData['description'] ?? '';
         $model->excerpt = Str::excerpt($paramData['description']);
-        $model->casts = $paramData['casts'] ?? '';
         $model->director = $paramData['director'] ?? '';
-        $model->release_year = $paramData['release_year'] ?? '';
+        $model->release_date = $paramData['release_date'] ?? '';
         $model->running_time = $paramData['running_time'] ?? '';
         $model->video_quality = $paramData['video_quality'] ?? '';
         $model->country_id = $paramData['country_id'] ?? '';
         $model->rating = $paramData['rating'] ?? 0;
-        $model->type_id = $paramData['type_id'] ?? '';
+        if ($paramData['trailer_video']) {
+            $model->trailer_video = $paramData['trailer_video'] ?? "";
+        }
 
         $model->update();
 
@@ -65,11 +65,11 @@ class MovieService
         }
     }
 
-    public function destroyVideo(object $model)
-    {
-        //video
-        if (public_path($model->video)) {
-            File::delete(public_path($model->video));
-        }
-    }
+    // public function destroyVideo(object $model)
+    // {
+    //     //video
+    //     if (public_path($model->video)) {
+    //         File::delete(public_path($model->video));
+    //     }
+    // }
 }
