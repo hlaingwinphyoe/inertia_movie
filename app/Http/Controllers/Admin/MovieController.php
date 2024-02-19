@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MovieStoreRequest;
+use App\Models\Cast;
 use App\Models\Genre;
 use App\Models\Country;
 use App\Models\Movie;
@@ -28,13 +29,14 @@ class MovieController extends Controller
 
     public function index()
     {
-        $movies = Movie::with(['genres', 'status'])->latest()
-            ->paginate(10)
+        $perPage = request('page_size') ?: 10;
+        $movies = Movie::query()->with(['genres','movie_casts'])->filterOn()->latest()
+            ->paginate($perPage)
             ->withQueryString()
             ->through(fn ($movie) => [
                 'id' => $movie->id,
                 'title' => $movie->title,
-                // 'type' => $movie->type->name,
+                'casts' => $movie->movie_casts,
                 'genres' => $movie->getGenres(),
                 'is_published' => $movie->is_published,
                 'views' => $movie->movie_views,
@@ -43,9 +45,11 @@ class MovieController extends Controller
                 'rating' => $movie->rating
             ]);
 
+        $casts = Cast::orderBy('name')->get();
+
         return Inertia::render('Movie-Settings/Movie/Index', [
             'movies' => $movies,
-            'filters' => request('search')
+            'casts' => $casts
         ]);
     }
 
@@ -71,8 +75,7 @@ class MovieController extends Controller
             if ($request->hasFile('cover')) {
                 $mediaFormdata = [
                     'media' => $request->file('cover'),
-                    'folder' => "movie_cover",
-                    'type' => 'image',
+                    'type' => "movie_cover",
                 ];
 
                 $url = $this->mediaSvc->storeMedia($mediaFormdata);
@@ -82,19 +85,15 @@ class MovieController extends Controller
                 ]);
             }
 
-            // video save
-            if ($request->hasFile('video')) {
+            if ($request->hasFile('movie_images')) {
                 $mediaFormdata = [
-                    'media' => $request->file('video'),
-                    'folder' => "movie_trailer",
-                    'type' => 'video',
+                    'medias' => $request->file('movie_images'),
+                    'type' => 'movie_photos',
                 ];
 
-                $url = $this->mediaSvc->storeMedia($mediaFormdata);
+                $medias = $this->mediaSvc->storeMultiMedia($mediaFormdata);
 
-                $movie->update([
-                    'video' => $url
-                ]);
+                $movie->medias()->attach($medias);
             }
 
             DB::commit();
@@ -115,7 +114,7 @@ class MovieController extends Controller
             'title' => "Edit",
             'countries' => $countries,
             'genres' => $genres,
-            'movie' => $movie->loadMissing('genres'),
+            'movie' => $movie->loadMissing(['genres', 'medias']),
         ]);
     }
 
@@ -128,8 +127,7 @@ class MovieController extends Controller
             if ($request->hasFile('cover')) {
                 $mediaFormdata = [
                     'media' => $request->file('cover'),
-                    'folder' => 'movie_cover',
-                    'type' => "image"
+                    'type' => 'movie_cover',
                 ];
 
                 $this->movieSvc->destroyImage($movie);
@@ -141,6 +139,17 @@ class MovieController extends Controller
                 ]);
             }
 
+            if ($request->hasFile('movie_images')) {
+                $mediaFormdata = [
+                    'medias' => $request->file('movie_images'),
+                    'type' => 'movie_photos',
+                ];
+
+                $medias = $this->mediaSvc->storeMultiMedia($mediaFormdata);
+
+                $movie->medias()->attach($medias);
+            }
+
             DB::commit();
             return redirect()->route('admin.movies.index')->with('success', 'Successfully Updated.');
         } catch (\Exception $e) {
@@ -149,10 +158,22 @@ class MovieController extends Controller
         }
     }
 
+    public function destroyMedia($id)
+    {
+        $this->mediaSvc->destroyMedia($id);
+
+        return redirect()->back()->with('success', 'Photo Deleted.');
+    }
+
     public function destroy(Movie $movie)
     {
-        // $this->movieSvc->destroyVideo($movie);
         $this->movieSvc->destroyImage($movie);
+
+        if ($movie->medias->count()) {
+            foreach ($movie->medias as $media) {
+                $media = $this->mediaSvc->destroyMedia($media->id);
+            }
+        }
 
         $movie->delete();
 

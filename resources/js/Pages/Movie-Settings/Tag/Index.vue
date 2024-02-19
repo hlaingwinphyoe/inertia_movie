@@ -24,7 +24,7 @@
                     Add New
                 </el-button>
                 <div>
-                    <el-input placeholder="Search..." v-model="param.search" />
+                    <el-input placeholder="Search Tag..." v-model="param.search" />
                 </div>
             </div>
 

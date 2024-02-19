@@ -20,7 +20,7 @@ return new class extends Migration
             $table->longText('description');
             $table->string('director')->nullable();
             $table->date('release_date')->nullable();
-            $table->text('video')->nullable();
+            $table->text('trailer_video')->nullable();
             $table->text('thumbnail')->nullable();
             $table->integer('size')->nullable();
             $table->double('rating', 2, 1)->default(0);

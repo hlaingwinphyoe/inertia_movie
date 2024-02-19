@@ -33,7 +33,9 @@ class MovieStoreRequest extends FormRequest
             "video_quality" => "required|string",
             "rating" => "required|numeric|min:0|max:10",
             "cover" => "nullable|image|mimes:png,jpg",
-            "trailer_video" => "nullable|string"
+            "trailer_video" => "nullable|string",
+            "movie_images" => "nullable|array",
+            "movie_images.*" => "image|mimes:png,jpg,jpeg,webp"
         ];
     }
 }

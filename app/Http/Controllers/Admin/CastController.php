@@ -25,11 +25,10 @@ class CastController extends Controller
 
     public function index()
     {
-        $casts = Cast::when(request('search'), function ($q, $search) {
-            return $q->where('name', 'like', "%$search%");
-        })
+        $perPage = request('page_size') ?: 10;
+        $casts = Cast::query()->filterOn()
             ->latest()
-            ->paginate(10)
+            ->paginate($perPage)
             ->withQueryString()
             ->through(fn ($cast) => [
                 'id' => $cast->id,
@@ -55,8 +54,7 @@ class CastController extends Controller
         if ($request->hasFile('profile')) {
             $mediaFormdata = [
                 'media' => $request->file('profile'),
-                'folder' => 'casts_profile',
-                'type' => 'image',
+                'type' => 'casts_profile',
             ];
 
             $url = $this->mediaSvc->storeMedia($mediaFormdata);
@@ -77,8 +75,7 @@ class CastController extends Controller
         if ($request->hasFile('profile')) {
             $mediaFormdata = [
                 'media' => $request->file('profile'),
-                'folder' => 'casts_profile',
-                'type' => 'image',
+                'type' => 'casts_profile',
             ];
 
             $this->castSvc->destroyImage($cast);

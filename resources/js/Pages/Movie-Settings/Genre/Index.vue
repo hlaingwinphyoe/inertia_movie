@@ -30,7 +30,7 @@
                     </el-button>
                 </div>
                 <div>
-                    <el-input placeholder="Search..." v-model="param.search" />
+                    <el-input placeholder="Search Genre..." v-model="param.search" />
                 </div>
             </div>
 
@@ -173,6 +173,7 @@ export default {
                 {},
                 {
                     onSuccess: (page) => {
+                        getData();
                         ElMessage.success(page.props.flash.success);
                     },
                 }

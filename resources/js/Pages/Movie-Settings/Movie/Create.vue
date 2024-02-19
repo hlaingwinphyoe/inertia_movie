@@ -250,6 +250,7 @@
                         />
 
                         <el-button
+                            v-if="embed_html"
                             type="danger"
                             plain
                             size="default"
@@ -262,7 +263,6 @@
                             v-model="dialogVisible"
                             title="Trailer Video"
                             draggable
-                            :before-close="handleClose"
                         >
                             <div
                                 class="aspect-w-16 aspect-h-9"
@@ -288,7 +288,20 @@
                             ></video>
                         </div> -->
                     </el-form-item>
-                    <el-form-item label="Photos" size="large"> </el-form-item>
+                    <el-form-item label="Photos" size="large">
+                        <el-upload
+                            v-model:file-list="fileList"
+                            list-type="picture-card"
+                            multiple
+                            :on-remove="handleRemove"
+                            :on-change="handleFileChange"
+                            accept="image/*"
+                            :limit="10"
+                            :auto-upload="false"
+                        >
+                            <font-awesome-icon :icon="['fas', 'plus']" />
+                        </el-upload>
+                    </el-form-item>
                 </div>
                 <div class="pt-5 border-t border-[#4C4D4F]">
                     <el-button type="primary" @click="submitForm(formRef)">
@@ -337,9 +350,14 @@ export default {
             dialogVisible: false,
             // videoSrc: props.movie ? props.movie.video : "",
             embed_html: props.movie ? props.movie.trailer_video : "",
+            fileList: props.movie ? props.movie.medias : [],
         });
 
         const formRef = ref();
+
+        const handleFileChange = (file) => {
+            state.fileList.push(file);
+        };
 
         const submitForm = (formRef) => {
             state.isLoading = true;
@@ -380,6 +398,10 @@ export default {
                         "trailer_video",
                         state.form.trailer_video
                     );
+
+                    for (const image of state.fileList) {
+                        state.virtualForm.append("movie_images[]", image.raw);
+                    }
 
                     if (props.title === "Create") {
                         router.post(
@@ -445,12 +467,22 @@ export default {
             };
         };
 
+        const handleRemove = (uploadFile) => {
+            router.delete(route("admin.movies.destroyMedia", uploadFile.id), {
+                onSuccess: (page) => {
+                    ElMessage.success(page.props.flash.success);
+                },
+            });
+        };
+
         return {
             ...toRefs(state),
             formRef,
             loadFile,
             selectImage,
             submitForm,
+            handleFileChange,
+            handleRemove,
         };
     },
 };

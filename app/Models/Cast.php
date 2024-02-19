@@ -19,4 +19,11 @@ class Cast extends Model
             ->generateSlugsFrom('name')
             ->saveSlugsTo('slug');
     }
+
+    public function scopeFilterOn($q)
+    {
+        if (request('search')) {
+            $q->where('name', 'like', "%" . request('search') . "%");
+        }
+    }
 }

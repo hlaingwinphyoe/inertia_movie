@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
@@ -42,6 +43,16 @@ class Movie extends Model
         return $this->belongsTo(Status::class);
     }
 
+    public function movie_casts(): BelongsToMany
+    {
+        return $this->belongsToMany(Cast::class, 'movie_casts', 'movie_id', 'cast_id');
+    }
+
+    public function medias(): MorphToMany
+    {
+        return $this->morphToMany(Media::class, 'mediabble');
+    }
+
     public function getGenres()
     {
         $name = '';
@@ -52,5 +63,12 @@ class Movie extends Model
         }
 
         return $name;
+    }
+
+    public function scopeFilterOn($q)
+    {
+        if (request('search')) {
+            $q->where('title', 'like', "%" . request('search') . "%");
+        }
     }
 }

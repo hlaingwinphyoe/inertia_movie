@@ -39,7 +39,10 @@
                     </div>
                 </div>
                 <div>
-                    <el-input placeholder="Search..." size="large" />
+                    <el-input
+                        placeholder="Search Movie..."
+                        v-model="param.search"
+                    />
                 </div>
             </div>
 
@@ -48,8 +51,7 @@
             <div class="relative overflow-x-auto">
                 <el-table
                     :data="movies.data"
-                    :default-sort="{ prop: 'name', order: 'ascending' }"
-                    table-layout="fixed"
+                    :default-sort="{ prop: 'created_at', order: 'descending' }"
                 >
                     <el-table-column type="index" label="Sr." width="50" />
                     <el-table-column label="Rating" align="center">
@@ -90,14 +92,48 @@
                         align="center"
                     />
 
+                    <el-table-column label="Publish" align="center">
+                        <template #default="scope">
+                            <el-switch
+                                v-model="scope.row.is_published"
+                                :active-value="1"
+                                :inactive-value="0"
+                                active-color="#13ce66"
+                                inactive-color="#ff4949"
+                                @change="changeStatus(scope.row)"
+                            />
+                        </template>
+                    </el-table-column>
+
                     <el-table-column
                         prop="created_at"
                         label="Created At"
                         sortable
                         align="center"
                     />
-                    <el-table-column label="Actions" align="center">
+                    <el-table-column
+                        label="Actions"
+                        align="center"
+                        fixed="right"
+                        width="150"
+                    >
                         <template #default="scope">
+                            <el-tooltip
+                                class="box-item"
+                                content="Add Casts"
+                                placement="top"
+                            >
+                                <el-button
+                                    type="info"
+                                    circle
+                                    style="margin-bottom: 5px"
+                                    @click="handleAddCasts(scope.row)"
+                                >
+                                    <font-awesome-icon
+                                        :icon="['fas', 'user-plus']"
+                                    />
+                                </el-button>
+                            </el-tooltip>
                             <el-tooltip
                                 class="box-item"
                                 content="Edit"
@@ -142,33 +178,63 @@
                     </el-table-column>
                 </el-table>
 
-                <Pagination :links="movies.links" />
+                <div class="my-5 flex items-center justify-center">
+                    <el-pagination
+                        :hide-on-single-page="total < param.page_size"
+                        @size-change="onSizeChange"
+                        @current-change="onCurrentChange"
+                        :page-size="param.page_size"
+                        :background="true"
+                        :page-sizes="pageList"
+                        :current-page="param.page"
+                        :layout="`total,sizes,prev,pager,next,jumper`"
+                        :total="total"
+                    />
+                </div>
             </div>
         </div>
+
+        <AddCastsDialog
+            :show="showDialog"
+            @closed="closeDialog"
+            :title="dialog.dialogTitle"
+            :data="dialog.dialogData"
+            :casts="casts"
+        />
     </AuthenticatedLayout>
 </template>
 
 <script>
 import Breadcrumb from "@/Components/Breadcrumb.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { reactive, toRefs } from "vue";
+import { reactive, toRefs, watch } from "vue";
 import { Link, router, useForm } from "@inertiajs/vue3";
 import { ElMessage, ElMessageBox } from "element-plus";
-import Pagination from "@/Shared/Pagination.vue";
+import AddCastsDialog from "./AddCastsDialog.vue";
+import debounce from "lodash.debounce";
 export default {
-    props: ["movies", "filters"],
+    props: ["movies", "casts"],
     components: {
         Breadcrumb,
         AuthenticatedLayout,
-        Pagination,
         Link,
+        AddCastsDialog,
     },
     setup(props) {
         const state = reactive({
             showDialog: false,
             isLoading: false,
+            dialog: {
+                dialogTitle: "",
+                dialogData: {},
+            },
             total: props.movies.total,
-            search: props.filters ?? "",
+            pageList: [10, 20, 60, 80, 100],
+            param: {
+                page: 1,
+                page_size: 10,
+                search: "",
+            },
         });
 
         const form = useForm({
@@ -182,6 +248,37 @@ export default {
                     ElMessage.success(page.props.flash.success);
                 },
             });
+        };
+
+        watch(
+            () => state.param.search,
+            debounce(() => {
+                getData();
+            }, 500)
+        );
+
+        const onSizeChange = (val) => {
+            state.param.page_size = val;
+            getData();
+        };
+
+        const onCurrentChange = (val) => {
+            state.param.page = val;
+            getData();
+        };
+
+        function getData() {
+            router.get("/admin/movies", state.param, {
+                preserveScroll: true,
+                preserveState: true,
+                replace: true,
+            });
+        }
+
+        const handleAddCasts = (row) => {
+            state.dialog.dialogTitle = "Add Casts To - " + row.title;
+            state.dialog.dialogData = JSON.parse(JSON.stringify(row));
+            state.showDialog = true;
         };
 
         const changeStatus = (row) => {
@@ -261,6 +358,9 @@ export default {
             changeStatus,
             generateItem,
             form,
+            handleAddCasts,
+            onSizeChange,
+            onCurrentChange
         };
     },
 };

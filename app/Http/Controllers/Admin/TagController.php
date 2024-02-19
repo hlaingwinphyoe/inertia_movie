@@ -11,9 +11,7 @@ class TagController extends Controller
 {
     public function index()
     {
-        $tags = Tag::when(request('search'), function ($q, $search) {
-            return $q->where('name', 'like', "%$search%");
-        })
+        $tags = Tag::query()->filterOn()
             ->latest()
             ->paginate(10)
             ->withQueryString()

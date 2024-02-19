@@ -40,7 +40,10 @@
                     </div>
                 </div>
                 <div>
-                    <el-input placeholder="Search..." size="large" />
+                    <el-input
+                        placeholder="Search Casts..."
+                        v-model="param.search"
+                    />
                 </div>
             </div>
 
@@ -145,7 +148,7 @@ import { router, useForm } from "@inertiajs/vue3";
 import { ElMessage, ElMessageBox } from "element-plus";
 import debounce from "lodash.debounce";
 export default {
-    props: ["casts", "filters"],
+    props: ["casts"],
     components: {
         Breadcrumb,
         AuthenticatedLayout,
@@ -211,7 +214,7 @@ export default {
         };
 
         function getData() {
-            router.get("/admin/genres", state.param, {
+            router.get("/admin/casts", state.param, {
                 preserveScroll: true,
                 preserveState: true,
                 replace: true,
