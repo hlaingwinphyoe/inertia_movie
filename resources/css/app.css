@@ -13,13 +13,7 @@ body {
     /* -webkit-user-select: none;
     -ms-user-select: none;
     user-select: none; */
-
-    /* for modal open */
-    margin-right: calc(-1 * (100vw - 100%));
     overflow-x: hidden;
-
-    /* this is scrollbar width */
-    padding-right: 3px;
 }
 
 .el-breadcrumb__inner,

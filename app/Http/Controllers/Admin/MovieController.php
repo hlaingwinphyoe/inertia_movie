@@ -39,7 +39,7 @@ class MovieController extends Controller
                 'casts' => $movie->movie_casts,
                 'genres' => $movie->getGenres(),
                 'is_published' => $movie->is_published,
-                'views' => $movie->movie_views,
+                'views' => $movie->views,
                 'created_at' => $movie->created_at->diffForHumans(),
                 'thumbnail' => $movie->thumbnail,
                 'rating' => $movie->rating
@@ -211,7 +211,7 @@ class MovieController extends Controller
                 'release_date' => $tmdb_movie['release_date'],
                 'country_id' => Country::where('country_code', $tmdb_movie['production_countries'][0]['iso_3166_1'])->first()->id,
                 'video_quality' => "HD",
-                'is_published' => false,
+                'is_published' => true,
                 'user_id' => Auth::id(),
                 'thumbnail' => config('services.tmdb.image_path') . $tmdb_movie['poster_path'],
 

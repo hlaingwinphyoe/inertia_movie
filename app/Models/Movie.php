@@ -65,6 +65,11 @@ class Movie extends Model
         return $name;
     }
 
+    public function scopePublished($q)
+    {
+        $q->where('is_published', 1);
+    }
+
     public function scopeFilterOn($q)
     {
         if (request('search')) {

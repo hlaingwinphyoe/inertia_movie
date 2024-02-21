@@ -1,94 +1,148 @@
-<script setup>
-import Checkbox from '@/Components/Checkbox.vue';
-import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+<template>
+    <el-dialog
+        :modelValue="show"
+        @update:modelValue="show = $event"
+        @close="closeDialog(formRef)"
+        draggable
+        :close-on-click-modal="false"
+        width="30%"
+        center
+    >
+        <div class="text-center mb-6">
+            <h4 class="text-xl uppercase">Movie</h4>
+        </div>
+        <div class="px-4">
+            <el-form
+                label-width="100px"
+                ref="formRef"
+                :model="form"
+                label-position="top"
+            >
+                <el-form-item
+                    label="Email"
+                    size="large"
+                    :rules="[
+                        {
+                            required: true,
+                            message: 'Email is required',
+                            trigger: 'blur',
+                        },
+                    ]"
+                >
+                    <el-input
+                        type="email"
+                        v-model="form.email"
+                        placeholder=""
+                    />
+                    <div v-if="form.errors.email" class="text-red-600">
+                        {{ form.errors.email }}
+                    </div>
+                </el-form-item>
+                <el-form-item
+                    label="Password"
+                    size="large"
+                    :rules="[
+                        {
+                            required: true,
+                            message: 'Password is required',
+                            trigger: 'blur',
+                        },
+                    ]"
+                >
+                    <el-input
+                        type="password"
+                        v-model="form.password"
+                        placeholder=""
+                    />
+                    <div v-if="form.errors.password" class="text-red-600">
+                        {{ form.errors.password }}
+                    </div>
+                </el-form-item>
 
-defineProps({
-    canResetPassword: {
-        type: Boolean,
+                <div class="flex justify-between items-center">
+                    <el-checkbox
+                        v-model="form.remember"
+                        label="Remember Me"
+                        size="large"
+                        name="remember"
+                    />
+                    <Link
+                        :href="route('password.request')"
+                        class="underline text-sm text-gray-400 hover:text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                        Forgot your password?
+                    </Link>
+                </div>
+            </el-form>
+        </div>
+        <template #footer>
+            <div class="px-4 pb-4">
+                <el-button
+                    type="primary"
+                    class="w-full"
+                    size="large"
+                    @click="submitDialog(formRef)"
+                >
+                    Login
+                </el-button>
+            </div>
+            <span class="text-gray-400">or</span>
+            <div class="py-4">
+                <el-button size="large">
+                    <font-awesome-icon :icon="['fab', 'google']" />
+                </el-button>
+                <el-button size="large">
+                    <font-awesome-icon :icon="['fab', 'facebook']" />
+                </el-button>
+                <el-button size="large">
+                    <font-awesome-icon :icon="['fab', 'x-twitter']" />
+                </el-button>
+            </div>
+        </template>
+    </el-dialog>
+</template>
+
+<script>
+import { reactive, ref, toRefs } from "vue";
+import { Link, useForm } from "@inertiajs/vue3";
+import { ElMessage } from "element-plus";
+export default {
+    props: ["show"],
+    emits: ["closed"],
+    setup(props, context) {
+        const state = reactive({
+            doubleClick: false,
+        });
+        const formRef = ref();
+        const form = useForm({
+            email: "",
+            password: "",
+            remember: false,
+        });
+        const submitDialog = (formRef) => {
+            formRef.validate((valid) => {
+                if (valid) {
+                    form.post(route("login"), {
+                        onSuccess: () => closeDialog(formRef),
+                    });
+                }
+            });
+        };
+        const closeDialog = (formRef) => {
+            form.reset();
+            formRef.resetFields();
+            context.emit("closed");
+        };
+        return {
+            ...toRefs(state),
+            formRef,
+            closeDialog,
+            submitDialog,
+            form,
+        };
     },
-    status: {
-        type: String,
-    },
-});
-
-const form = useForm({
-    email: '',
-    password: '',
-    remember: false,
-});
-
-const submit = () => {
-    form.post(route('login'), {
-        onFinish: () => form.reset('password'),
-    });
+    components: { Link },
 };
 </script>
 
-<template>
-    <GuestLayout>
-        <Head title="Log in" />
-
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
-            {{ status }}
-        </div>
-
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
-
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
-
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-
-                <TextInput
-                    id="password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password"
-                    required
-                    autocomplete="current-password"
-                />
-
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
-
-            <div class="block mt-4">
-                <label class="flex items-center">
-                    <Checkbox name="remember" v-model:checked="form.remember" />
-                    <span class="ms-2 text-sm text-gray-600">Remember me</span>
-                </label>
-            </div>
-
-            <div class="flex items-center justify-end mt-4">
-                <Link
-                    v-if="canResetPassword"
-                    :href="route('password.request')"
-                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                    Forgot your password?
-                </Link>
-
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Log in
-                </PrimaryButton>
-            </div>
-        </form>
-    </GuestLayout>
-</template>
+<style></style>
