@@ -21,44 +21,101 @@
                 >
                     This Week
                 </div>
-
-                <!-- <div
-                    class="px-6 py-1.5 rounded-full cursor-pointer transition-transform duration-500 ease-in-out"
-                    :class="checkActive('Today')"
-                    @click="toggleMovie('Today')"
-                >
-                    Today
-                </div>
-                <div
-                    class="px-6 py-1.5 rounded-full cursor-pointer transition-transform duration-500 ease-in-out"
-                    :class="checkActive('This Week')"
-                    @click="toggleMovie('This Week')"
-                >
-                    This Week
-                </div> -->
             </div>
         </div>
-        <div class="mt-5 grid grid-cols-6">
-            <Card v-for="movie in movieLists" :key="movie.id" :movie="movie" />
+        <div
+            class="mt-4 flex items-center gap-2 relative"
+            v-loading="isLoading"
+            element-loading-text="Loading..."
+            element-loading-background="rgba(0, 0, 0, 0.8)"
+            style="width: 100%"
+        >
+            <div
+                class="hidden lg:block absolute -left-8 cursor-pointer mb-10"
+                @click.prevent="prev"
+            >
+                <font-awesome-icon
+                    :icon="['fas', 'circle-chevron-left']"
+                    size="lg"
+                />
+            </div>
+            <Carousel
+                ref="refCarousel"
+                v-bind="settings"
+                :breakpoints="breakpoints"
+                :itemsToScroll="2"
+            >
+                <Slide v-for="movie in movieLists" :key="movie.id">
+                    <div class="carousel__item">
+                        <Card :movie="movie" />
+                    </div>
+                </Slide>
+            </Carousel>
+            <div
+                class="hidden lg:block absolute -right-8 cursor-pointer mb-10"
+                @click.prevent="next"
+            >
+                <font-awesome-icon
+                    :icon="['fas', 'circle-chevron-right']"
+                    size="lg"
+                />
+            </div>
         </div>
     </div>
 </template>
 
 <script>
-import { onMounted, reactive, toRefs } from "vue";
+import { onMounted, reactive, ref, toRefs } from "vue";
 import Card from "./Composables/Card.vue";
+import { Carousel, Slide } from "vue3-carousel";
+
+import "vue3-carousel/dist/carousel.css";
+import { router } from "@inertiajs/vue3";
 export default {
     props: ["latest_movies"],
-    components: { Card },
+    components: { Card, Carousel, Slide },
     setup(props) {
         const state = reactive({
             title: "Today",
             movieLists: props.latest_movies ? props.latest_movies : [],
+            settings: {
+                itemsToShow: 1,
+                snapAlign: "center",
+            },
+            isLoading: false,
+            breakpoints: {
+                700: {
+                    itemsToShow: 3.5,
+                    snapAlign: "center",
+                },
+                1024: {
+                    itemsToShow: 5.5,
+                    snapAlign: "start",
+                },
+            },
         });
 
         const toggleMovie = (value) => {
             state.title = value;
             tabActive();
+            getData(value);
+        };
+
+        const getData = (param) => {
+            state.isLoading = true;
+            router.get(
+                route("home", { q: param }),
+                {},
+                {
+                    preserveState: true,
+                    onSuccess: (page) => {
+                        state.movieLists = page.props.latest_movies;
+                    },
+                    onFinish: () => {
+                        state.isLoading = false;
+                    },
+                }
+            );
         };
 
         const tabActive = () => {
@@ -84,6 +141,16 @@ export default {
             });
         };
 
+        const refCarousel = ref(null);
+
+        const next = () => {
+            refCarousel.value.data.next();
+        };
+
+        const prev = () => {
+            refCarousel.value.data.prev();
+        };
+
         onMounted(() => {
             tabActive();
         });
@@ -91,6 +158,9 @@ export default {
         return {
             ...toRefs(state),
             toggleMovie,
+            next,
+            prev,
+            refCarousel,
         };
     },
 };

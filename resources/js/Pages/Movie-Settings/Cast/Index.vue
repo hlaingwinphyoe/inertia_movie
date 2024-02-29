@@ -124,7 +124,7 @@
                         :page-sizes="pageList"
                         :current-page="param.page"
                         :layout="`total,sizes,prev,pager,next,jumper`"
-                        :total="total"
+                        :total="casts.total"
                     />
                 </div>
             </div>
@@ -162,7 +162,6 @@ export default {
                 dialogTitle: "",
                 dialogData: {},
             },
-            total: props.casts.total,
             pageList: [10, 20, 60, 80, 100],
             param: {
                 page: 1,

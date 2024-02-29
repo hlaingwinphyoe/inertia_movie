@@ -61,6 +61,13 @@
                 <font-awesome-icon :icon="['fas', 'grip']" class="ml-0.5" />
                 <span class="ml-3">Tags</span>
             </NavLink>
+            <NavLink
+                href="/admin/banners"
+                :active="route().current('admin.banners.index')"
+            >
+                <font-awesome-icon :icon="['fas', 'grip']" class="ml-0.5" />
+                <span class="ml-3">Banner</span>
+            </NavLink>
         </div>
     </div>
 </template>

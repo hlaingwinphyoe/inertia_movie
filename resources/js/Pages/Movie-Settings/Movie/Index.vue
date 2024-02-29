@@ -49,11 +49,8 @@
             <!-- Main -->
 
             <div class="relative overflow-x-auto">
-                <el-table
-                    :data="movies.data"
-                    :default-sort="{ prop: 'created_at', order: 'descending' }"
-                >
-                    <el-table-column type="index" label="Sr." width="50" />
+                <el-table :data="movies.data">
+                    <el-table-column prop="id" label="Sr." width="50" />
                     <el-table-column label="Rating" align="center">
                         <template #default="scope">
                             <el-image
@@ -188,7 +185,7 @@
                         :page-sizes="pageList"
                         :current-page="param.page"
                         :layout="`total,sizes,prev,pager,next,jumper`"
-                        :total="total"
+                        :total="movies.total"
                     />
                 </div>
             </div>
@@ -228,7 +225,6 @@ export default {
                 dialogTitle: "",
                 dialogData: {},
             },
-            total: props.movies.total,
             pageList: [10, 20, 60, 80, 100],
             param: {
                 page: 1,
@@ -360,7 +356,7 @@ export default {
             form,
             handleAddCasts,
             onSizeChange,
-            onCurrentChange
+            onCurrentChange,
         };
     },
 };

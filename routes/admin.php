@@ -5,9 +5,12 @@ use App\Http\Controllers\Admin\CastsAttachToMovieController;
 use App\Http\Controllers\Admin\GenreController;
 use App\Http\Controllers\Admin\MovieController;
 use App\Http\Controllers\Admin\TagController;
+use App\Http\Controllers\Admin\BannerController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->name('admin.')->group(function () {
+    Route::resource('/banners', BannerController::class);
+
     // Movie Settings
     Route::resource('/genres', GenreController::class);
     Route::post('/genres/generate', [GenreController::class, 'generateGenreFromMDB'])->name('genres.generate');

@@ -108,7 +108,7 @@
                         :page-sizes="pageList"
                         :current-page="param.page"
                         :layout="`total,sizes,prev,pager,next,jumper`"
-                        :total="total"
+                        :total="genres.total"
                     />
                 </div>
             </div>

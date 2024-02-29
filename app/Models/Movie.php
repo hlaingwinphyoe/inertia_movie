@@ -37,6 +37,10 @@ class Movie extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function country(): BelongsTo
+    {
+        return $this->belongsTo(Country::class);
+    }
 
     public function status(): BelongsTo
     {
@@ -74,6 +78,12 @@ class Movie extends Model
     {
         if (request('search')) {
             $q->where('title', 'like', "%" . request('search') . "%");
+        }
+
+        if (request('q') == 'This Week') {
+            $q->whereBetween('created_at', [now()->subDays(6), now()]);
+        } else {
+            $q->orderBy('created_at', 'desc');
         }
     }
 }

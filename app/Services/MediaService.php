@@ -9,6 +9,53 @@ use Intervention\Image\Facades\Image;
 
 class MediaService
 {
+    public function storeBanner(array $formData = [])
+    {
+        try {
+            DB::beginTransaction();
+
+            $file = $formData['media'];
+
+            $fileNameWithExt = $file->getClientOriginalName();
+            $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+            $fileNameToStore = 'banner_' . time() . '.' . $file->extension();
+
+            $ext = $file->extension();
+
+            //store file
+            if (!Storage::exists('public/' . $formData['type'])) {
+                Storage::makeDirectory('public/' . $formData['type']);
+            }
+
+            $url = 'storage/' . $formData['type'] . '/' . $fileNameToStore;
+
+
+            $img = Image::make($file);
+            $file = $img->fit(800, 500, function ($constraint) {
+                $constraint->upsize();
+            });
+            $file->save($url);
+
+            $url = Storage::url('public/' . $formData['type'] . '/' . $fileNameToStore);
+
+            $media = Media::create([
+                'name' => $fileName,
+                'slug' => $fileNameToStore,
+                'url' => $url,
+                'ext' => $ext,
+                'type' => $formData['type'],
+            ]);
+
+            DB::commit();
+
+            return $media;
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            throw $e;
+        }
+    }
+
     public function storeMedia(array $formData = [])
     {
         try {

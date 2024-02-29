@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Site;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\MovieResource;
 use App\Models\Movie;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class MovieController extends Controller
 {
@@ -25,5 +27,12 @@ class MovieController extends Controller
                 'thumbnail' => $movie->thumbnail,
                 'rating' => $movie->rating
             ]);
+    }
+
+    public function detail(Movie $movie)
+    {
+        return Inertia::render('Frontend/Movies/Detail', [
+            "movie" => new MovieResource($movie)
+        ]);
     }
 }

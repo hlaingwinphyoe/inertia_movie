@@ -112,7 +112,7 @@ export default {
 
         const openDialog = () => {
             state.dialogTitle = props.title;
-            form.casts = props.data.casts.map((a) => a.id) ?? "";
+
             state.movieTitle = props.data.title;
             form.movieId = props.data.id;
         };
