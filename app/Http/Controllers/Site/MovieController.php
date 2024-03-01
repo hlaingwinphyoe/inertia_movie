@@ -31,8 +31,17 @@ class MovieController extends Controller
 
     public function detail(Movie $movie)
     {
+        $relatedMovies = Movie::whereHas('genres', function ($q) use ($movie) {
+            $q->whereIn('id', $movie->genres->pluck('id'));
+        })
+            ->where('id', '!=', $movie->id)
+            ->inRandomOrder()
+            ->get()
+            ->take(5);
+
         return Inertia::render('Frontend/Movies/Detail', [
-            "movie" => new MovieResource($movie)
+            "movie" => new MovieResource($movie),
+            'relatedMovies' => MovieResource::collection($relatedMovies)
         ]);
     }
 }

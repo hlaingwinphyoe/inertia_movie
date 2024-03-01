@@ -19,9 +19,9 @@ class MovieResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'casts' => $this->movie_casts,
-            'genres' => $this->genres,
+            'genres' => $this->getGenres(),
             'views' => $this->views,
-            'release_date' => $this->release_date,
+            'release_date' => Carbon::parse($this->release_date)->format('d/M/Y'),
             'release_year' => Carbon::parse($this->release_date)->format('Y'),
             'created_at' => $this->created_at->diffForHumans(),
             'thumbnail' => $this->thumbnail,
@@ -32,6 +32,7 @@ class MovieResource extends JsonResource
             'running_time' => $this->running_time,
             'director' => $this->director,
             'country' => $this->country ? $this->country->name : null,
+            'trailer_video' => $this->trailer_video,
         ];
     }
 }

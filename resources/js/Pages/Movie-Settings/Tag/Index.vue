@@ -5,7 +5,7 @@
                 <h4 class="text-xl font-bold">
                     Tags
                     <small class="ml-2 text-gray-500 font-thin text-[13px]"
-                        >{{ total }} Total</small
+                        >{{ tags.total }} Total</small
                     >
                 </h4>
                 <!-- Bradcrumb -->
@@ -152,7 +152,7 @@
 
                 <div class="my-5 flex items-center justify-center">
                     <el-pagination
-                        :hide-on-single-page="total < param.page_size"
+                        :hide-on-single-page="tags.total < param.page_size"
                         @size-change="onSizeChange"
                         @current-change="onCurrentChange"
                         :page-size="param.page_size"

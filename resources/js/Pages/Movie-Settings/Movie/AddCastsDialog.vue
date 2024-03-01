@@ -115,6 +115,9 @@ export default {
 
             state.movieTitle = props.data.title;
             form.movieId = props.data.id;
+            form.casts = props.data.casts
+                ? props.data.casts.map((a) => a.id)
+                : [];
         };
 
         return {

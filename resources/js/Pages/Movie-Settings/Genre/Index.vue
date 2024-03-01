@@ -5,7 +5,7 @@
                 <h4 class="text-xl font-bold">
                     Genres
                     <small class="ml-2 text-gray-500 font-thin text-[13px]"
-                        >{{ total }} Total</small
+                        >{{ genres.total }} Total</small
                     >
                 </h4>
                 <!-- Bradcrumb -->
@@ -100,7 +100,7 @@
 
                 <div class="my-5 flex items-center justify-center">
                     <el-pagination
-                        :hide-on-single-page="total < param.page_size"
+                        :hide-on-single-page="genres.total < param.page_size"
                         @size-change="onSizeChange"
                         @current-change="onCurrentChange"
                         :page-size="param.page_size"
@@ -146,7 +146,6 @@ export default {
                 dialogTitle: "",
                 dialogData: {},
             },
-            total: props.genres.total,
             pageList: [10, 20, 60, 80, 100],
             param: {
                 page: 1,
