@@ -195,7 +195,7 @@ class MovieController extends Controller
     {
         $movie = Movie::where('tmdb_id', $request->movieId)->exists();
         if ($movie) {
-            return redirect()->back()->with('success', 'Movie Already Exists.');
+            return redirect()->back()->withErrors(['error' => 'Movie Already Exists.']);
         }
 
         $tmdb_movie = Http::asJson()->get(config('services.tmdb.endpoint') . 'movie/' . $request->movieId . '?api_key=' . config('services.tmdb.secret') . '&language=en-US');

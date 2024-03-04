@@ -20,6 +20,7 @@
         "vue": "^3.4.0"
     },
     "dependencies": {
+        "@egjs/vue3-flicking": "^4.11.2",
         "@fortawesome/fontawesome-svg-core": "^6.5.1",
         "@fortawesome/free-brands-svg-icons": "^6.5.1",
         "@fortawesome/free-regular-svg-icons": "^6.5.1",
@@ -28,6 +29,7 @@
         "element-plus": "^2.5.5",
         "flowbite": "^2.2.1",
         "lodash.debounce": "^4.0.8",
+        "meilisearch": "^0.37.0",
         "vue3-carousel": "^0.3.1"
     }
 }

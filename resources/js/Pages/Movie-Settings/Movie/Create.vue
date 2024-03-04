@@ -430,10 +430,10 @@ export default {
                                     ElMessage.success(page.props.flash.success);
                                     formRef.resetFields();
                                 },
-                                onError: () => {
+                                onError: (page) => {
                                     state.isLoading = false;
                                     formRef.resetFields();
-                                    ElMessage.error(page.props.flash.error);
+                                    ElMessage.error(page.error);
                                 },
                             }
                         );

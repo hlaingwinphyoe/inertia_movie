@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Laravel\Scout\Searchable;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
 class Movie extends Model
 {
-    use HasFactory, HasSlug;
+    use HasFactory, HasSlug, Searchable;
 
     protected $guarded = [];
 
@@ -81,7 +83,7 @@ class Movie extends Model
         }
 
         if (request('q') == 'This Week') {
-            $q->whereBetween('created_at', [now()->subDays(6), now()]);
+            $q->whereBetween('created_at', [now()->subDays(6), now()->subDay()]);
         } else {
             $q->orderBy('created_at', 'desc');
         }

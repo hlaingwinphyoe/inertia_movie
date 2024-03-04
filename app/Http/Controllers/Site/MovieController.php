@@ -37,7 +37,7 @@ class MovieController extends Controller
             ->where('id', '!=', $movie->id)
             ->inRandomOrder()
             ->get()
-            ->take(5);
+            ->take(2);
 
         return Inertia::render('Frontend/Movies/Detail', [
             "movie" => new MovieResource($movie),

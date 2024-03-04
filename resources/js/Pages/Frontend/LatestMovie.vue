@@ -44,6 +44,8 @@
                 v-bind="settings"
                 :breakpoints="breakpoints"
                 :itemsToScroll="2"
+                :autoplay="2000"
+                :touchDrag="false"
             >
                 <Slide v-for="movie in movieLists" :key="movie.id">
                     <div class="carousel__item">
@@ -90,7 +92,7 @@ export default {
                 },
                 1024: {
                     itemsToShow: 5.5,
-                    snapAlign: "start",
+                    snapAlign: "center",
                 },
             },
         });
@@ -108,6 +110,7 @@ export default {
                 {},
                 {
                     preserveState: true,
+                    replace: true,
                     onSuccess: (page) => {
                         state.movieLists = page.props.latest_movies;
                     },
@@ -153,6 +156,7 @@ export default {
 
         onMounted(() => {
             tabActive();
+            getData("Today");
         });
 
         return {

@@ -135,7 +135,12 @@
             </div>
             <div class="grid grid-cols-6 gap-6 divide-x divide-secondary-600">
                 <div class="col-span-5 mb-4">
-                    <h4 class="text-lg font-semibold mb-2">Top Casts</h4>
+                    <h4
+                        class="text-lg font-semibold mb-2"
+                        v-if="movie.casts.length"
+                    >
+                        Top Casts
+                    </h4>
                     <div class="grid grid-cols-6 overflow-scroll gap-4 mb-4">
                         <CastCard
                             v-for="cast in movie.casts"
@@ -145,7 +150,7 @@
                     </div>
 
                     <!-- Discover -->
-                    <Discover />
+                    <Discover :photos="photos" />
                 </div>
                 <div class="pl-3 shadow">
                     <RelatedMovie
@@ -171,7 +176,7 @@ import FrontLayout from "@/Layouts/FrontLayout.vue";
 import CastCard from "../Composables/CastCard.vue";
 import Discover from "./Discover.vue";
 import TrailerDialog from "./TrailerDialog.vue";
-import { reactive, toRefs } from "vue";
+import { onMounted, reactive, toRefs } from "vue";
 import RelatedMovie from "./RelatedMovie.vue";
 export default {
     components: {
@@ -182,13 +187,14 @@ export default {
         RelatedMovie,
     },
     props: ["movie", "relatedMovies"],
-    setup() {
+    setup(props) {
         const state = reactive({
             dialog: {
                 dialogTitle: "",
                 dialogData: "",
             },
             showTrailer: false,
+            photos: [],
         });
 
         const handleTrailer = (row) => {
@@ -200,6 +206,10 @@ export default {
         const closeDialog = () => {
             state.showTrailer = false;
         };
+
+        onMounted(() => {
+            state.photos = props.movie.photos.map((photo) => photo.url);
+        });
 
         return {
             ...toRefs(state),

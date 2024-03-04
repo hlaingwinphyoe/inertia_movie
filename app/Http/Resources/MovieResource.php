@@ -17,6 +17,7 @@ class MovieResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'slug' => $this->slug,
             'title' => $this->title,
             'casts' => $this->movie_casts,
             'genres' => $this->getGenres(),
@@ -26,6 +27,7 @@ class MovieResource extends JsonResource
             'created_at' => $this->created_at->diffForHumans(),
             'thumbnail' => $this->thumbnail,
             'rating' => $this->rating,
+            'excerpt' => $this->excerpt,
             'description' => $this->description,
             'video_quality' => $this->video_quality,
             'views' => $this->views,
@@ -33,6 +35,7 @@ class MovieResource extends JsonResource
             'director' => $this->director,
             'country' => $this->country ? $this->country->name : null,
             'trailer_video' => $this->trailer_video,
+            'photos' => $this->medias ? $this->medias : [],
         ];
     }
 }

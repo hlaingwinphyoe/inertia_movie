@@ -32,7 +32,7 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
-                    <el-button circle>
+                    <el-button circle @click="openSearchDialog">
                         <font-awesome-icon
                             :icon="['fas', 'magnifying-glass']"
                         />
@@ -83,9 +83,10 @@
                 </div>
             </div>
         </nav>
-    </header>
 
-    <Login :show="showLogin" @closed="closeDialog" />
+        <Login :show="showLogin" @closed="closeDialog" />
+        <Search :show="showDialog" @closed="closeDialog" />
+    </header>
 </template>
 
 <script>
@@ -95,16 +96,19 @@ import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import { Link, router, usePage } from "@inertiajs/vue3";
 import NavLink from "@/Components/NavLink.vue";
 import Login from "@/Pages/Auth/Login.vue";
+import Search from "@/Pages/Frontend/Composables/Search.vue";
 export default {
     setup() {
         const state = reactive({
             canLogin: usePage().props.canLogin,
             auth: usePage().props.auth,
             showLogin: false,
+            showDialog: false,
         });
 
         onMounted(() => {
             initFlowbite();
+            window.addEventListener("keydown", handleKeydown);
         });
 
         const handleLogin = () => {
@@ -115,13 +119,30 @@ export default {
             state.showLogin = false;
         };
 
+        const openSearchDialog = () => {
+            state.showDialog = true;
+        };
+
+        const closeSearchDialog = () => {
+            state.showDialog = false;
+        };
+
+        const handleKeydown = (e) => {
+            if (state.showDialog) return;
+            if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+                openSearchDialog();
+            }
+        };
+
         return {
             ...toRefs(state),
             handleLogin,
             closeDialog,
+            openSearchDialog,
+            closeSearchDialog,
         };
     },
-    components: { ApplicationLogo, NavLink, Login, Link },
+    components: { ApplicationLogo, NavLink, Login, Link, Search },
 };
 </script>
 

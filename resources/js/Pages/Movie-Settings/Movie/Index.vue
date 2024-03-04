@@ -243,6 +243,9 @@ export default {
                     form.reset();
                     ElMessage.success(page.props.flash.success);
                 },
+                onError: (page) => {
+                    ElMessage.error(page.error);
+                },
             });
         };
 
