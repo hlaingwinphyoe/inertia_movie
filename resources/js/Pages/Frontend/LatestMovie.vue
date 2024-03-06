@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="flex items-center gap-5">
+        <div class="flex items-center gap-5 px-4">
             <h4 class="text-xl font-bold">Latest Movies</h4>
             <div
                 class="relative w-max flex items-center rounded-full border border-primary-700 text-xs"
@@ -31,7 +31,7 @@
             style="width: 100%"
         >
             <div
-                class="hidden lg:block absolute -left-8 cursor-pointer mb-10"
+                class="hidden lg:block cursor-pointer mb-[3.5rem]"
                 @click.prevent="prev"
             >
                 <font-awesome-icon
@@ -54,7 +54,7 @@
                 </Slide>
             </Carousel>
             <div
-                class="hidden lg:block absolute -right-8 cursor-pointer mb-10"
+                class="hidden lg:block cursor-pointer mb-[3.5rem]"
                 @click.prevent="next"
             >
                 <font-awesome-icon

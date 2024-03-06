@@ -20,6 +20,7 @@ use Inertia\Inertia;
 
 Route::controller(HomeController::class)->group(function () {
     Route::get('/', 'home')->name('home');
+    Route::get('/search', 'search')->name('search');
 });
 
 Route::get('/dashboard', function () {

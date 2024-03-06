@@ -141,14 +141,22 @@
                     >
                         Top Casts
                     </h4>
-                    <div class="grid grid-cols-6 overflow-scroll gap-4 mb-4">
-                        <CastCard
-                            v-for="cast in movie.casts"
-                            :key="cast.id"
-                            :cast="cast"
-                        />
+                    <div class="mb-4">
+                        <Flicking
+                            :options="{
+                                align: 'prev',
+                                horizontal: true,
+                                preventClickOnDrag: true,
+                                autoResize: true,
+                            }"
+                        >
+                            <CastCard
+                                v-for="cast in movie.casts"
+                                :key="cast.id"
+                                :cast="cast"
+                            />
+                        </Flicking>
                     </div>
-
                     <!-- Discover -->
                     <Discover :photos="photos" />
                 </div>
@@ -178,6 +186,9 @@ import Discover from "./Discover.vue";
 import TrailerDialog from "./TrailerDialog.vue";
 import { onMounted, reactive, toRefs } from "vue";
 import RelatedMovie from "./RelatedMovie.vue";
+import Flicking from "@egjs/vue3-flicking";
+import "@egjs/vue3-flicking/dist/flicking.css";
+
 export default {
     components: {
         FrontLayout,
@@ -185,6 +196,7 @@ export default {
         Discover,
         TrailerDialog,
         RelatedMovie,
+        Flicking,
     },
     props: ["movie", "relatedMovies"],
     setup(props) {

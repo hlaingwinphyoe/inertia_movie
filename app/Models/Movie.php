@@ -85,7 +85,12 @@ class Movie extends Model
         if (request('q') == 'This Week') {
             $q->whereBetween('created_at', [now()->subDays(6), now()->subDay()]);
         } else {
-            $q->orderBy('created_at', 'desc');
+            $q->inRandomOrder();
+        }
+
+        if (request('query')) {
+            $q->where('title', 'like', "%" . request('query') . "%")
+                ->orWhere('description', 'like', "%" . request('query') . "%");
         }
     }
 }

@@ -3,9 +3,11 @@
         <nav class="container mx-auto px-4 lg:px-6 py-1.5">
             <div class="flex justify-between items-center">
                 <div class="flex items-center gap-3">
-                    <ApplicationLogo class="h-8" />
-                    <h4 class="text-xl uppercase font-bold">Movie</h4>
+                    <Link :href="route('home')" class="flex items-center gap-2">
+                        <ApplicationLogo class="h-8" />
 
+                        <h4 class="text-xl uppercase font-bold">Movie</h4>
+                    </Link>
                     <div class="flex items-center">
                         <NavLink
                             href="/"

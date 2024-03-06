@@ -4,7 +4,7 @@
         class="relative cursor-pointer"
     >
         <el-card
-            class="w-fit relative group"
+            class="h-[230px] w-fit relative group"
             style="border-radius: 8px !important"
             :body-style="{ padding: '0px' }"
         >
@@ -40,7 +40,12 @@
             </div>
         </el-card>
         <div class="mt-2 mb-4 text-sm">
-            <span class="font-bold text-[14.5px]">{{ movie.title }}</span>
+            <!-- <el-text truncated>{{
+                movie.title
+            }}</el-text> -->
+            <span class="font-bold text-sm truncate w-fit">
+                {{ truncate(movie.title) }}
+            </span>
             <div class="text-secondary-400 text-[13px]">
                 {{ movie.release_date }}
             </div>
@@ -53,6 +58,19 @@ import { Link } from "@inertiajs/vue3";
 export default {
     props: ["movie"],
     components: { Link },
+    setup() {
+        const truncate = (text) => {
+            if (text.length > 23) {
+                return text.substring(0, 20) + "...";
+            }
+
+            return text;
+        };
+
+        return {
+            truncate,
+        };
+    },
 };
 </script>
 
