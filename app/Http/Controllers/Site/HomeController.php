@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Site;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\MovieResource;
+use App\Models\FAQ;
 use App\Models\Media;
 use App\Models\Movie;
 use Carbon\Carbon;
@@ -30,10 +31,13 @@ class HomeController extends Controller
             'trailer_video' => $movie->trailer_video
         ]);
 
+        $faqs = FAQ::isType('faq')->latest()->take(5)->get();
+
         return Inertia::render('Welcome', [
             'latest_movies' => $latest_movies,
             'trailer_videos' => $trailer_videos,
             'banners' => $banners,
+            'faqs' => $faqs,
         ]);
     }
 

@@ -6,16 +6,18 @@ use App\Http\Controllers\Admin\GenreController;
 use App\Http\Controllers\Admin\MovieController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\FaqController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth')->name('admin.')->group(function () {
+Route::middleware(['auth','admin'])->name('admin.')->group(function () {
     Route::resource('/banners', BannerController::class);
+    Route::resource('/faqs', FaqController::class);
 
     // Movie Settings
     Route::resource('/genres', GenreController::class);
     Route::post('/genres/generate', [GenreController::class, 'generateGenreFromMDB'])->name('genres.generate');
     Route::resource('/tags', TagController::class);
-
+    
     Route::resource('/casts', CastController::class);
     Route::post('/casts/generate', [CastController::class, 'generateCastFromMDB'])->name('casts.generate');
 

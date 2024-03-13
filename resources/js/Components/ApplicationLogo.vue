@@ -1,3 +1,3 @@
 <template>
-    <font-awesome-icon :icon="['fas', 'satellite-dish']" />
+    <img src="/logo.png" alt="">
 </template>

@@ -49,22 +49,35 @@
                                 </span>
                                 <template #dropdown>
                                     <el-dropdown-menu>
-                                        <el-dropdown-item>
-                                            <Link :href="route('dashboard')">
+                                        <el-dropdown-item v-if="auth.user.is_admin">
+                                            <Link
+                                                :href="route('dashboard')"
+                                                class="tracking-wide"
+                                            >
                                                 Dashboard
                                             </Link>
                                         </el-dropdown-item>
-                                        <el-dropdown-item
-                                            >Profile</el-dropdown-item
-                                        >
-                                        <el-dropdown-item divided>
+                                        <el-dropdown-item>
                                             <Link
-                                                :href="route('logout')"
-                                                as="button"
-                                                method="post"
+                                                :href="route('dashboard')"
+                                                class="tracking-wide"
                                             >
-                                                Sign Out
+                                                Profile
                                             </Link>
+                                        </el-dropdown-item>
+                                        <el-dropdown-item divided>
+                                            <a
+                                                href="javascript:void(0)"
+                                                @click="handleLogout"
+                                            >
+                                                <font-awesome-icon
+                                                    :icon="[
+                                                        'fas',
+                                                        'right-from-bracket',
+                                                    ]"
+                                                />
+                                                Log Out
+                                            </a>
                                         </el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
@@ -87,7 +100,7 @@
         </nav>
 
         <Login :show="showLogin" @closed="closeDialog" />
-        <Search :show="showDialog" @closed="closeDialog" />
+        <Search :show="showDialog" @closed="closeSearchDialog" />
     </header>
 </template>
 
@@ -99,6 +112,7 @@ import { Link, router, usePage } from "@inertiajs/vue3";
 import NavLink from "@/Components/NavLink.vue";
 import Login from "@/Pages/Auth/Login.vue";
 import Search from "@/Pages/Frontend/Composables/Search.vue";
+import { ElMessage } from "element-plus";
 export default {
     setup() {
         const state = reactive({
@@ -136,12 +150,29 @@ export default {
             }
         };
 
+        const handleLogout = () => {
+            router.post(
+                route("logout"),
+                {},
+                {
+                    onSuccess: (page) => {
+                        ElMessage.success(page.props.flash.success);
+                    },
+                    onError: (page) => {
+                        ElMessage.error(page.props.flash.error);
+                    },
+                    onFinish: () => window.location.reload(),
+                }
+            );
+        };
+
         return {
             ...toRefs(state),
             handleLogin,
             closeDialog,
             openSearchDialog,
             closeSearchDialog,
+            handleLogout,
         };
     },
     components: { ApplicationLogo, NavLink, Login, Link, Search },

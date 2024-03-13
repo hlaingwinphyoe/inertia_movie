@@ -1,7 +1,7 @@
 <template>
     <div class="bg-secondary-800 p-6 rounded-xl">
         <h4 class="text-xl font-bold">Latest Trailers</h4>
-        <div>
+        <div v-if="trailer_videos.length">
             <el-carousel :interval="4000" type="card">
                 <el-carousel-item v-for="item in trailer_videos" :key="item.id">
                     <div
@@ -11,6 +11,7 @@
                 </el-carousel-item>
             </el-carousel>
         </div>
+        <el-empty v-else description="No Trailer Video" />
     </div>
 </template>
 

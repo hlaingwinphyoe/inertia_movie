@@ -33,6 +33,8 @@
             <!-- Latest Trailers -->
             <LatestTrailer :trailer_videos="trailer_videos" />
 
+            <FAQ :faqs="faqs" />
+
             <div class="my-5"></div>
         </div>
     </FrontLayout>
@@ -45,10 +47,11 @@ import { reactive, toRefs } from "vue";
 import LatestMovie from "./Frontend/LatestMovie.vue";
 import LatestTrailer from "./Frontend/LatestTrailer.vue";
 import { router } from "@inertiajs/vue3";
+import FAQ from './Frontend/FAQ.vue';
 
 export default {
-    props: ["latest_movies", "trailer_videos"],
-    components: { FrontLayout, TextInput, LatestMovie, LatestTrailer },
+    props: ["latest_movies", "trailer_videos", "faqs"],
+    components: { FrontLayout, TextInput, LatestMovie, LatestTrailer, FAQ },
     setup(props) {
         const state = reactive({
             search: "",

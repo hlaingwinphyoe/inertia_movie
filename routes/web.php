@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\Site\HomeController;
 use App\Http\Controllers\Site\MovieController;
 use Illuminate\Foundation\Application;
@@ -18,6 +19,10 @@ use Inertia\Inertia;
 |
 */
 
+Route::get('/auth/{provider}/redirect', [ProviderController::class, 'redirect']);
+
+Route::get('/auth/{provider}/callback', [ProviderController::class, 'callback']);
+
 Route::controller(HomeController::class)->group(function () {
     Route::get('/', 'home')->name('home');
     Route::get('/search', 'search')->name('search');
@@ -25,7 +30,7 @@ Route::controller(HomeController::class)->group(function () {
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified', 'admin'])->name('dashboard');
 
 Route::controller(MovieController::class)->name('movies.')->group(function () {
     Route::get('/movies/{movie}', 'detail')->name('detail');

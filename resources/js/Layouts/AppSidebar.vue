@@ -65,8 +65,15 @@
                 href="/admin/banners"
                 :active="route().current('admin.banners.index')"
             >
-                <font-awesome-icon :icon="['fas', 'grip']" class="ml-0.5" />
+                <font-awesome-icon :icon="['fas', 'images']" />
                 <span class="ml-3">Banner</span>
+            </NavLink>
+            <NavLink
+            href="/admin/faqs"
+                :active="route().current('admin.faqs.index')"
+            >
+                <font-awesome-icon :icon="['fas', 'images']" />
+                <span class="ml-3">FAQs</span>
             </NavLink>
         </div>
     </div>
@@ -99,14 +106,18 @@ export default {
                 }
             )
                 .then(() => {
-                    router.post(route("logout"), {
-                        onSuccess: (page) => {
-                            ElMessage.success(page.props.flash.success);
-                        },
-                        onError: (page) => {
-                            ElMessage.error(page.props.flash.error);
-                        },
-                    });
+                    router.post(
+                        route("logout"),
+                        {},
+                        {
+                            onSuccess: (page) => {
+                                ElMessage.success(page.props.flash.success);
+                            },
+                            onError: (page) => {
+                                ElMessage.error(page.props.flash.error);
+                            },
+                        }
+                    );
                 })
                 .catch(() => {
                     ElMessage({

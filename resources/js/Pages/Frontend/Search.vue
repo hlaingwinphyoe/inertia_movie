@@ -25,13 +25,6 @@
                     >
                         Movies
                     </h4>
-                    <el-button type="danger" text bg round @click="refresh">
-                        <font-awesome-icon
-                            :icon="['fas', 'arrows-rotate']"
-                            class="mr-1"
-                        />
-                        Refresh
-                    </el-button>
                 </div>
                 <div v-if="moviesList.length">
                     <div
@@ -40,7 +33,7 @@
                         <div v-for="movie in moviesList" :key="movie.id">
                             <Link
                                 :href="route('movies.detail', movie.id)"
-                                class="flex flex-col items-start border rounded-lg md:flex-row md:max-w-xl border-secondary-700 bg-secondary-700 hover:scale-95 hover:shadow-sm hover:shadow-secondary-700 transition-transform duration-300 ease-in-out"
+                                class="flex flex-col items-start border rounded-lg md:flex-row md:max-w-xl border-secondary-700 bg-secondary-700 hover:scale-95 hover:shadow-sm hover:shadow-secondary-700 transition-transform duration-200 ease-out"
                             >
                                 <img
                                     class="object-cover w-full rounded-t-lg h-20 md:h-36 md:w-28 md:rounded-none md:rounded-s-lg"
@@ -141,7 +134,6 @@ export default {
                 {
                     preserveScroll: true,
                     preserveState: true,
-                    replace: true,
                     onSuccess: (page) => {
                         state.moviesList = page.props.movies.data;
                         state.last_page = page.props.movies.meta.last_page;
@@ -176,19 +168,10 @@ export default {
             }
         };
 
-        const refresh = () => {
-            state.param.search = "";
-            state.param.page = 1;
-            state.param.page_size = 10;
-            state.param.last_page = 1;
-            searchMovies();
-        };
-
         return {
             ...toRefs(state),
             searchMovies,
             seeMore,
-            refresh,
         };
     },
 };

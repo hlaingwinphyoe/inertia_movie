@@ -24,6 +24,7 @@
             </div>
         </div>
         <div
+        v-if="movieLists.length"
             class="mt-4 flex items-center gap-2 relative"
             v-loading="isLoading"
             element-loading-text="Loading..."
@@ -63,6 +64,7 @@
                 />
             </div>
         </div>
+        <el-empty v-else description="No Movie" />
     </div>
 </template>
 

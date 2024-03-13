@@ -9,7 +9,7 @@
         center
     >
         <div class="text-center mb-6">
-            <h4 class="text-xl uppercase">Movie</h4>
+            <h4 class="text-xl uppercase">Login</h4>
         </div>
         <div class="px-4">
             <el-form
@@ -87,16 +87,14 @@
                 </el-button>
             </div>
             <span class="text-gray-400">or</span>
-            <div class="py-4">
-                <el-button size="large">
-                    <font-awesome-icon :icon="['fab', 'google']" />
-                </el-button>
-                <el-button size="large">
-                    <font-awesome-icon :icon="['fab', 'facebook']" />
-                </el-button>
-                <el-button size="large">
-                    <font-awesome-icon :icon="['fab', 'x-twitter']" />
-                </el-button>
+            <div class="p-4">
+                <a
+                    href="/auth/google/redirect"
+                    class="text-white bg-secondary-700 hover:bg-secondary-700/90 focus:ring-4 focus:outline-none focus:ring-secondary-700/50 font-medium rounded-md text-sm px-5 py-2.5 text-center inline-flex items-center justify-center mb-2 w-full"
+                >
+                    <font-awesome-icon :icon="['fab', 'google']" class="mr-1" />
+                    Sign in with Google
+                </a>
             </div>
         </template>
     </el-dialog>
@@ -104,8 +102,7 @@
 
 <script>
 import { reactive, ref, toRefs } from "vue";
-import { Link, useForm } from "@inertiajs/vue3";
-import { ElMessage } from "element-plus";
+import { Link, router, useForm } from "@inertiajs/vue3";
 export default {
     props: ["show"],
     emits: ["closed"],
@@ -124,6 +121,7 @@ export default {
                 if (valid) {
                     form.post(route("login"), {
                         onSuccess: () => closeDialog(formRef),
+                        onFinish: () => window.location.reload(),
                     });
                 }
             });
@@ -131,7 +129,6 @@ export default {
         const closeDialog = (formRef) => {
             form.reset();
             formRef.resetFields();
-            context.emit("closed");
         };
         return {
             ...toRefs(state),
